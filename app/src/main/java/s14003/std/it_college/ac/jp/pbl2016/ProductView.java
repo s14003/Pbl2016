@@ -3,15 +3,18 @@ package s14003.std.it_college.ac.jp.pbl2016;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -26,16 +29,15 @@ public class ProductView extends Activity implements AdapterView.OnItemClickList
     private MyHelper myHelper;
     private Handler mHandler;
 
-
     /**
      * リストビュークリック時の処理
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long l) {
+        /*
 
         ProductItem item = (ProductItem) parent.getItemAtPosition(position);
 
-        /*
         Intent intent = new Intent(this, EditProduct.class);
 
         intent.putExtra("mode", "edit");
@@ -47,9 +49,13 @@ public class ProductView extends Activity implements AdapterView.OnItemClickList
         intent.putExtra("stock", item.stock);
 
         startActivity(intent);
-        //*/
+        */
     }
 
+    /**
+     * 追加ボタン押下時の処理
+     * @param view
+     */
     @Override
     public void onClick(View view) {
         /*
@@ -137,7 +143,12 @@ public class ProductView extends Activity implements AdapterView.OnItemClickList
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("NOW", "ProductView.onCreate");
         super.onCreate(savedInstanceState);
+
+        //TODO: アクションバーだけを表示させる(App themeを指定したまま)
+        //requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+
         setContentView(R.layout.activity_product_view);
 
         // DBマネージャーを生成
@@ -175,7 +186,11 @@ public class ProductView extends Activity implements AdapterView.OnItemClickList
         /*
         Button btn_add = (Button)findViewById(R.id.btn_add);
         btn_add.setOnClickListener(this);
-        //*/
+        */
+
+        /**
+         * 更新ボタン
+         */
 
         Button btn_ini = (Button)findViewById(R.id.btn_ini);
         btn_ini.setOnClickListener(new View.OnClickListener() {
@@ -200,8 +215,35 @@ public class ProductView extends Activity implements AdapterView.OnItemClickList
                 })).start();
             }
         });
+    }
 
+    /**
+     * オプションメニューの設定
+     * @param m
+     * @return
+     */
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu m) {
+        Log.d("NOW", "onCreateOptionsMenu");
+        m.add(0, 0, 0, "アカウント情報変更・削除");
+        m.add(0, 10, 1, "商品のキャンセル");
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem mi) {
+        Log.d("NOW", "onOptionsItemSelected");
+        switch(mi.getItemId()) {
+            case 0:
+                //TODO: Go to each activities.
+                return true;
+            case 1:
+                //TODO: Go to each activities.
+                return true;
+            default:
+                return false;
+        }
     }
 
     /**
