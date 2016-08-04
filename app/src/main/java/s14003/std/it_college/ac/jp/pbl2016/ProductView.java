@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -28,6 +29,7 @@ public class ProductView extends AppCompatActivity implements AdapterView.OnItem
     private Handler mHandler;
     private List<ProductItem> itemList;
     private ItemAdapter adapter;
+    private List<ProductItem> selectProduct;
 
     /**
      * ProductItem Class
@@ -54,17 +56,52 @@ public class ProductView extends AppCompatActivity implements AdapterView.OnItem
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            Log.d("NOW", "ItemAdapter.getView()");
             View view = inflater.inflate(R.layout.product_row, null, false);
-            //TextView idView = (TextView)view.findViewById(R.id.id);
             TextView nameView = (TextView)view.findViewById(R.id.name);
             TextView priceView = (TextView)view.findViewById(R.id.price);
-            //TextView stockView = (TextView)view.findViewById(R.id.stock);
             ProductItem item = getItem(position);
-            //idView.setText(item.id);
             nameView.setText(item.name);
             priceView.setText(String.valueOf(item.price));
-            //stockView.setText(String.valueOf(item.stock));
+
+            //*
+            final CheckBox checkBox = (CheckBox)view.findViewById(R.id.checkbox);
+            Log.d("NOW", "final CheckBox");
+//            Log.d("NOW", checkBox.toString());
+            //*/
+
+            selectProduct = new ArrayList<ProductItem>();
+            //final ArrayList<Person> finalSelectPerson = selectPerson;
+            checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (checkBox.isChecked()) {
+                        selectProduct.add(itemList.get(position));
+                        Log.e("select:", selectProduct.get(selectProduct.size() - 1).name);
+                    } else {
+                        selectProduct.remove(itemList.get(position));
+                    }
+                }
+            });
+            //
+
+            /*
+            nameView.setText(item.name);
+            priceView.setText(item.price);
+
+            Button btnOK = (Button)findViewById(R.id.btn_check_order);
+            btnOK.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    for (ProductItem productItem : selectProduct) {
+                        Log.e("ProductName :", productItem.name);
+                        Log.e("ProductPrice :", String.valueOf(productItem.price));
+                    }
+                }
+            });
+            //*/
+
             return  view;
         }
     }
@@ -91,6 +128,25 @@ public class ProductView extends AppCompatActivity implements AdapterView.OnItem
         adapter.setNotifyOnChange(true);
         ListView listView = (ListView)findViewById(R.id.list_view);
         listView.setAdapter(adapter);
+
+
+        // Table取得したデータをListViewにセットするためのスレッド
+        //*
+        (new Thread(new Runnable() {
+            @Override
+            public void run() {
+                setProductData();
+
+                //メインスレッドのメッセージキューにメッセージを登録します。
+                mHandler.post(new Runnable (){
+                    //run()の中の処理はメインスレッドで動作されます。
+                    public void run(){
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        })).start();
+        //*/
 
         listView.setOnItemClickListener(this);
 
@@ -128,7 +184,7 @@ public class ProductView extends AppCompatActivity implements AdapterView.OnItem
      * 注文確認
      */
     public void checkOrder() {
-        Log.d("CHECKORDER", "ProductView.checkOrder");
+        Log.d("CHECK_ORDER", "ProductView.checkOrder");
     }
 
     /**
@@ -137,6 +193,7 @@ public class ProductView extends AppCompatActivity implements AdapterView.OnItem
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long l) {
+
         /*
         ProductItem item = (ProductItem) parent.getItemAtPosition(position);
 
@@ -172,22 +229,6 @@ public class ProductView extends AppCompatActivity implements AdapterView.OnItem
 
     private void setProductData() {
         Log.d("", "setProductData()");
-        /*
-        ProductItem item = new ProductItem();
-        item.id = "A01";
-        item.name = "赤鉛筆";
-        item.price = "50";
-        item.stock = "100";
-        itemList.add(item);
-
-        item = new ProductItem();
-        item.id = "A02";
-        item.name = "青鉛筆";
-        item.price = "50";
-        item.stock = "50";
-        itemList.add(item);
-        */
-
         selectProductList();
     }
 
@@ -264,7 +305,6 @@ public class ProductView extends AppCompatActivity implements AdapterView.OnItem
                 //TODO: Go to each activities.
                 return true;
             case 20:
-
                 //スレッドを生成して起動します
                 (new Thread(new Runnable() {
                     @Override
