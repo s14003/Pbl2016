@@ -1,20 +1,18 @@
 package s14003.std.it_college.ac.jp.pbl2016;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -24,18 +22,122 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductView extends Activity implements AdapterView.OnItemClickListener, View.OnClickListener {
+public class ProductView extends AppCompatActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
 
     private MyHelper myHelper;
     private Handler mHandler;
+    private List<ProductItem> itemList;
+    private ItemAdapter adapter;
 
     /**
+     * ProductItem Class
+     * 商品のデータ
+     */
+    private class ProductItem {
+        public int _id;
+        public String id;
+        public String name;
+        public int price;
+        public int stock;
+    }
+
+    /**
+     * ItemAdapter Class
+     * ListViewの描画を管理するクラス
+     */
+    private class ItemAdapter extends ArrayAdapter<ProductItem> {
+        private LayoutInflater inflater;
+
+        public ItemAdapter(Context context, int resource, List<ProductItem> objects){
+            super(context, resource, objects);
+            inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = inflater.inflate(R.layout.product_row, null, false);
+            //TextView idView = (TextView)view.findViewById(R.id.id);
+            TextView nameView = (TextView)view.findViewById(R.id.name);
+            TextView priceView = (TextView)view.findViewById(R.id.price);
+            //TextView stockView = (TextView)view.findViewById(R.id.stock);
+            ProductItem item = getItem(position);
+            //idView.setText(item.id);
+            nameView.setText(item.name);
+            priceView.setText(String.valueOf(item.price));
+            //stockView.setText(String.valueOf(item.stock));
+            return  view;
+        }
+    }
+
+    /**
+     * onCreate Method
+     * Activityの初期化処理
+     * @param savedInstanceState
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_product_view);
+
+        // DBマネージャーを生成
+        myHelper = new MyHelper(this);
+
+        // ハンドラを生成
+        mHandler = new Handler();
+
+        // ListViewの処理
+        itemList = new ArrayList<ProductItem>();
+        adapter = new ItemAdapter(getApplicationContext(), 0, itemList);
+        adapter.setNotifyOnChange(true);
+        ListView listView = (ListView)findViewById(R.id.list_view);
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(this);
+
+        // ログアウトボタン
+        Button btnLogout = (Button) findViewById(R.id.btn_logout);
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: ログアウト処理
+                logOut();
+            }
+        });
+
+        // 注文確認ボタン
+        Button transition = (Button) findViewById(R.id.btn_check_order);
+        transition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: 注文確認画面
+                checkOrder();
+            }
+        });
+    }
+
+    /**
+     * logOut Method
+     * ログアウト処理
+     */
+    public void logOut() {
+        Log.d("LOGOUT", "ProductView.logOut");
+    }
+
+    /**
+     * checkOrder Method
+     * 注文確認
+     */
+    public void checkOrder() {
+        Log.d("CHECKORDER", "ProductView.checkOrder");
+    }
+
+    /**
+     * onItemClick Method
      * リストビュークリック時の処理
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long l) {
         /*
-
         ProductItem item = (ProductItem) parent.getItemAtPosition(position);
 
         Intent intent = new Intent(this, EditProduct.class);
@@ -53,6 +155,7 @@ public class ProductView extends Activity implements AdapterView.OnItemClickList
     }
 
     /**
+     * onClick Method
      * 追加ボタン押下時の処理
      * @param view
      */
@@ -67,18 +170,8 @@ public class ProductView extends Activity implements AdapterView.OnItemClickList
         */
     }
 
-    private class ProductItem {
-        public int _id;
-        public String id;
-        public String name;
-        public int price;
-        public int stock;
-    }
-
-    private List<ProductItem> itemList;
-    private ItemAdapter adapter;
-
     private void setProductData() {
+        Log.d("", "setProductData()");
         /*
         ProductItem item = new ProductItem();
         item.id = "A01";
@@ -141,61 +234,36 @@ public class ProductView extends Activity implements AdapterView.OnItemClickList
 
     }
 
+    /**
+     * オプションメニューの項目設定
+     * @param m
+     * @return
+     */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        Log.d("NOW", "ProductView.onCreate");
-        super.onCreate(savedInstanceState);
+    public boolean onCreateOptionsMenu(Menu m) {
+        Log.d("NOW", "onCreateOptionsMenu");
+        m.add(0, 0, 0, "アカウント情報変更・削除");
+        m.add(0, 10, 1, "商品のキャンセル");
+        m.add(0, 20, 2, "DB更新");
+        return true;
+    }
 
-        //TODO: アクションバーだけを表示させる(App themeを指定したまま)
-        //requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
-
-        setContentView(R.layout.activity_product_view);
-
-        // DBマネージャーを生成
-        myHelper = new MyHelper(this);
-
-        // ハンドラを生成
-        mHandler = new Handler();
-
-        // ListViewの処理
-        itemList = new ArrayList<ProductItem>();
-        adapter = new ItemAdapter(getApplicationContext(), 0, itemList);
-        adapter.setNotifyOnChange(true);
-        ListView listView = (ListView)findViewById(R.id.list_view);
-        listView.setAdapter(adapter);
-
-        // Table取得したデータをListViewにセットするためのスレッド
-        (new Thread(new Runnable() {
-            @Override
-            public void run() {
-                setProductData();
-
-                //メインスレッドのメッセージキューにメッセージを登録します。
-                mHandler.post(new Runnable (){
-                    //run()の中の処理はメインスレッドで動作されます。
-                    public void run(){
-                        adapter.notifyDataSetChanged();
-                    }
-                });
-            }
-        })).start();
-
-        listView.setOnItemClickListener(this);
-
-        // 新規登録ボタン
-        /*
-        Button btn_add = (Button)findViewById(R.id.btn_add);
-        btn_add.setOnClickListener(this);
-        */
-
-        /**
-         * 更新ボタン
-         */
-
-        Button btn_ini = (Button)findViewById(R.id.btn_ini);
-        btn_ini.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+    /**
+     * onOptionsItemSelected Method
+     * オプションメニューの押下時処理
+     * @param mi
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem mi) {
+        switch(mi.getItemId()) {
+            case 0:
+                //TODO: Go to each activities.
+                return true;
+            case 10:
+                //TODO: Go to each activities.
+                return true;
+            case 20:
 
                 //スレッドを生成して起動します
                 (new Thread(new Runnable() {
@@ -213,33 +281,7 @@ public class ProductView extends Activity implements AdapterView.OnItemClickList
                         });
                     }
                 })).start();
-            }
-        });
-    }
 
-    /**
-     * オプションメニューの設定
-     * @param m
-     * @return
-     */
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu m) {
-        Log.d("NOW", "onCreateOptionsMenu");
-        m.add(0, 0, 0, "アカウント情報変更・削除");
-        m.add(0, 10, 1, "商品のキャンセル");
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem mi) {
-        Log.d("NOW", "onOptionsItemSelected");
-        switch(mi.getItemId()) {
-            case 0:
-                //TODO: Go to each activities.
-                return true;
-            case 1:
-                //TODO: Go to each activities.
                 return true;
             default:
                 return false;
@@ -247,35 +289,35 @@ public class ProductView extends Activity implements AdapterView.OnItemClickList
     }
 
     /**
-     * ListViewの描画を管理するクラス
+     * initTable method
+     * DBの初期化
      */
-    private class ItemAdapter extends ArrayAdapter<ProductItem> {
-        private LayoutInflater inflater;
+    public void initTable() {
+        SQLiteDatabase db = myHelper.getWritableDatabase();
 
-        public ItemAdapter(Context context, int resource, List<ProductItem> objects){
-            super(context, resource, objects);
-            inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        }
+        // 一旦を削除
+        int count = db.delete(MyHelper.TABLE_NAME, null, null);
 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View view = inflater.inflate(R.layout.product_row, null, false);
-            TextView idView = (TextView)view.findViewById(R.id.id);
-            TextView nameView = (TextView)view.findViewById(R.id.name);
-            TextView priceView = (TextView)view.findViewById(R.id.price);
-            TextView stockView = (TextView)view.findViewById(R.id.stock);
-            ProductItem item = getItem(position);
-            idView.setText(item.id);
-            nameView.setText(item.name);
-            priceView.setText(String.valueOf(item.price));
-            stockView.setText(String.valueOf(item.stock));
-            return  view;
+        setProductDbData();
+
+        for (int i = 0; i < itemDbList.size(); i++) {
+            ProductDbItem item = itemDbList.get(i);
+
+            // 列に対応する値をセットする
+            ContentValues values = new ContentValues();
+            values.put(MyHelper.Columns.ID, item.id);
+            values.put(MyHelper.Columns.NAME, item.name);
+            values.put(MyHelper.Columns.PRICE, item.price);
+            values.put(MyHelper.Columns.STOCK, item.stock);
+
+            // データベースに行を追加する
+            long id = db.insert(MyHelper.TABLE_NAME, null, values);
+            if (id == -1) {
+                Log.d("Database", "failed");
+            }
         }
     }
 
-    /**
-     * テーブルを初期化するための処理
-     */
     private class ProductDbItem {
         String id;
         String name;
@@ -338,31 +380,4 @@ public class ProductView extends Activity implements AdapterView.OnItemClickList
         itemDbList.add(item);
 
     }
-
-    public void initTable() {
-        SQLiteDatabase db = myHelper.getWritableDatabase();
-
-        // 一旦を削除
-        int count = db.delete(MyHelper.TABLE_NAME, null, null);
-
-        setProductDbData();
-
-        for (int i = 0; i < itemDbList.size(); i++) {
-            ProductDbItem item = itemDbList.get(i);
-
-            // 列に対応する値をセットする
-            ContentValues values = new ContentValues();
-            values.put(MyHelper.Columns.ID, item.id);
-            values.put(MyHelper.Columns.NAME, item.name);
-            values.put(MyHelper.Columns.PRICE, item.price);
-            values.put(MyHelper.Columns.STOCK, item.stock);
-
-            // データベースに行を追加する
-            long id = db.insert(MyHelper.TABLE_NAME, null, values);
-            if (id == -1) {
-                Log.d("Database", "failed");
-            }
-        }
-    }
-
 }
