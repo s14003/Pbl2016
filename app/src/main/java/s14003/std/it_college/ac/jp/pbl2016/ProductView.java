@@ -23,13 +23,13 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductView extends AppCompatActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
+public class ProductView extends AppCompatActivity {
 
     private MyHelper myHelper;
     private Handler mHandler;
     private List<ProductItem> itemList;
     private ItemAdapter adapter;
-    private List<ProductItem> selectProduct;
+    private List<ProductItem> selectProduct = new ArrayList<>();
 
     /**
      * ProductItem Class
@@ -57,7 +57,6 @@ public class ProductView extends AppCompatActivity implements AdapterView.OnItem
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            Log.d("NOW", "ItemAdapter.getView()");
             View view = inflater.inflate(R.layout.product_row, null, false);
             TextView nameView = (TextView)view.findViewById(R.id.name);
             TextView priceView = (TextView)view.findViewById(R.id.price);
@@ -65,11 +64,7 @@ public class ProductView extends AppCompatActivity implements AdapterView.OnItem
             nameView.setText(item.name);
             priceView.setText(String.valueOf(item.price));
 
-            //*
-            final CheckBox checkBox = (CheckBox)view.findViewById(R.id.checkbox);
-            Log.d("NOW", "final CheckBox");
-//            Log.d("NOW", checkBox.toString());
-            //*/
+            final CheckBox checkBox = (CheckBox)view.findViewById(R.id.checkBox);
 
             selectProduct = new ArrayList<ProductItem>();
             //final ArrayList<Person> finalSelectPerson = selectPerson;
@@ -84,12 +79,8 @@ public class ProductView extends AppCompatActivity implements AdapterView.OnItem
                     }
                 }
             });
-            //
 
             /*
-            nameView.setText(item.name);
-            priceView.setText(item.price);
-
             Button btnOK = (Button)findViewById(R.id.btn_check_order);
             btnOK.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -148,14 +139,13 @@ public class ProductView extends AppCompatActivity implements AdapterView.OnItem
         })).start();
         //*/
 
-        listView.setOnItemClickListener(this);
+        //listView.setOnItemClickListener(this);
 
         // ログアウトボタン
         Button btnLogout = (Button) findViewById(R.id.btn_logout);
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: ログアウト処理
                 logOut();
             }
         });
@@ -165,7 +155,6 @@ public class ProductView extends AppCompatActivity implements AdapterView.OnItem
         transition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: 注文確認画面
                 checkOrder();
             }
         });
@@ -177,6 +166,8 @@ public class ProductView extends AppCompatActivity implements AdapterView.OnItem
      */
     public void logOut() {
         Log.d("LOGOUT", "ProductView.logOut");
+        //test
+        if (isSelectProduct()) selectProduct.remove(0);
     }
 
     /**
@@ -185,46 +176,51 @@ public class ProductView extends AppCompatActivity implements AdapterView.OnItem
      */
     public void checkOrder() {
         Log.d("CHECK_ORDER", "ProductView.checkOrder");
+
+        if (!isSelectProduct()) {
+            //TODO: リクエスト拒否メッセージ
+            Log.d("CHECK_ORDER", "注文リストが空です");
+            return;
+        }
+        insertRecord();
+        //TODO: 注文確認画面へ繊遷移
     }
 
     /**
-     * onItemClick Method
-     * リストビュークリック時の処理
+     * insert Method
+     * 注文テーブルにレコードを追加する
      */
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long l) {
+    private void insertRecord() {
+        //TODO: DB登録処理
+        Log.d("CHECK_ORDER", "insertRecord()");
 
-        /*
-        ProductItem item = (ProductItem) parent.getItemAtPosition(position);
+        SQLiteDatabase db = myHelper.getWritableDatabase();
+        Log.d("CHECK_ORDER", db.toString());
 
-        Intent intent = new Intent(this, EditProduct.class);
+        // 列に対応する値をセットする
+        ContentValues values = new ContentValues();
+        //values.put(MyHelper.Columns., memo);
 
-        intent.putExtra("mode", "edit");
+        //values.put(MyHelper.ColumnsOrder.MAILADDRESS, );
 
-        intent.putExtra("_id", item._id);
-        intent.putExtra("id", item.id);
-        intent.putExtra("name", item.name);
-        intent.putExtra("price", item.price);
-        intent.putExtra("stock", item.stock);
+        // データベースに行を追加する
+        long id = db.insert(MyHelper.TABLE_NAME, null, values);
+        if (id == -1) {
+            Log.v("CHECK_ORDER", "行の追加に失敗したよ");
+        }
 
-        startActivity(intent);
-        */
+        db.close();
     }
 
     /**
-     * onClick Method
-     * 追加ボタン押下時の処理
-     * @param view
+     * isSelectProduct Method
+     * 注文リストに１個以上登録されているか確認する
+     * @return
      */
-    @Override
-    public void onClick(View view) {
-        /*
-        Intent intent = new Intent(this, EditProduct.class);
-
-        intent.putExtra("mode", "add");
-
-        startActivity(intent);
-        */
+    private boolean isSelectProduct() {
+        //TODO: チェックリスト確認
+        Log.d("CHECK_ORDER", "isSelectProduct()");
+        return selectProduct.size() > 0;
     }
 
     private void setProductData() {
@@ -232,6 +228,10 @@ public class ProductView extends AppCompatActivity implements AdapterView.OnItem
         selectProductList();
     }
 
+    /**
+     * selectProductList Method
+     * 商品DBから情報を取得して表示
+     */
     private void selectProductList() {
         // 1. SQLiteDatabaseオブジェクトを取得
         SQLiteDatabase db = myHelper.getReadableDatabase();
