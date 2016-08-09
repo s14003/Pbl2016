@@ -1,4 +1,4 @@
-package s14003.std.it_college.ac.jp.pbl2016;
+package s14003.std.it_college.ac.jp.pbl2016.Product;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

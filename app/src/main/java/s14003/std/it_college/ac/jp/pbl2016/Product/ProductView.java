@@ -1,4 +1,4 @@
-package s14003.std.it_college.ac.jp.pbl2016;
+package s14003.std.it_college.ac.jp.pbl2016.Product;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -24,6 +24,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import s14003.std.it_college.ac.jp.pbl2016.OrderCheckActivity;
+import s14003.std.it_college.ac.jp.pbl2016.Product.MyHelper;
+import s14003.std.it_college.ac.jp.pbl2016.R;
 
 public class ProductView extends AppCompatActivity {
 
