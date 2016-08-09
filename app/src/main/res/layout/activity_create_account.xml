@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="s14003.std.it_college.ac.jp.pbl2016.CreateAccount">
+    tools:context=".Account.CreateAccount">
 
     <TextView
         android:layout_width="wrap_content"
@@ -198,9 +198,9 @@
         android:layout_height="wrap_content"
         android:text="確認"
         android:id="@+id/confirmation_btn"
-        android:layout_alignTop="@+id/back_button"
-        android:layout_alignEnd="@+id/confpass"
         android:height="50sp"
-        android:width="150sp" />
+        android:width="150sp"
+        android:layout_alignTop="@+id/back_button"
+        android:layout_toEndOf="@+id/surname" />
 
 </RelativeLayout>
