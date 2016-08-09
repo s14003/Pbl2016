@@ -2,6 +2,7 @@ package s14003.std.it_college.ac.jp.pbl2016;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
@@ -182,31 +183,41 @@ public class ProductView extends AppCompatActivity {
             Log.d("CHECK_ORDER", "注文リストが空です");
             return;
         }
-        insertRecord();
+        for (ProductItem item : selectProduct) {
+            insertRecord(item);
+        }
         //TODO: 注文確認画面へ繊遷移
+        Intent intent = new Intent(this, OrderCheckActivity.class);
+        startActivity(intent);
     }
 
     /**
      * insert Method
      * 注文テーブルにレコードを追加する
      */
-    private void insertRecord() {
+    private void insertRecord(ProductItem item) {
         //TODO: DB登録処理
         Log.d("CHECK_ORDER", "insertRecord()");
 
         SQLiteDatabase db = myHelper.getWritableDatabase();
-        Log.d("CHECK_ORDER", db.toString());
 
         // 列に対応する値をセットする
+        //TODO: アカウントメールアドレスを取得する
+        String mailaddr = "osamu.com";
         ContentValues values = new ContentValues();
-        //values.put(MyHelper.Columns., memo);
-
-        //values.put(MyHelper.ColumnsOrder.MAILADDRESS, );
+        values.put(MyHelper.ColumnsOrder.MAILADDRESS, mailaddr);
+        values.put(MyHelper.ColumnsOrder.PRODUCTNAME, item.name);
+        values.put(MyHelper.ColumnsOrder.QUANTITY, item.stock);
+        values.put(MyHelper.ColumnsOrder.PRICE, item.price);
+        values.put(MyHelper.ColumnsOrder.PRODUCTID, item.id);
 
         // データベースに行を追加する
-        long id = db.insert(MyHelper.TABLE_NAME, null, values);
+        long id = db.insert(MyHelper.TABLE_NAME_ORDER, null, values);
         if (id == -1) {
             Log.v("CHECK_ORDER", "行の追加に失敗したよ");
+        }
+        else {
+            Log.v("CHECK_ORDER", "行の追加に成功したよ");
         }
 
         db.close();
