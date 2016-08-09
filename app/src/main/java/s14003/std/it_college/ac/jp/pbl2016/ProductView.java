@@ -2,11 +2,13 @@ package s14003.std.it_college.ac.jp.pbl2016;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -179,14 +180,30 @@ public class ProductView extends AppCompatActivity {
         Log.d("CHECK_ORDER", "ProductView.checkOrder");
 
         if (!isSelectProduct()) {
-            //TODO: リクエスト拒否メッセージ
+            // リクエスト拒否メッセージ
             Log.d("CHECK_ORDER", "注文リストが空です");
+
+            // 確認ダイアログの生成
+            AlertDialog.Builder alertDlg = new AlertDialog.Builder(this);
+            alertDlg.setTitle("注文確認");
+            alertDlg.setMessage("商品を選択してくださいね");
+            alertDlg.setPositiveButton(
+                    "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+            // 表示
+            alertDlg.create().show();
+
             return;
         }
+
+        // 注文リストをDBに登録
         for (ProductItem item : selectProduct) {
             insertRecord(item);
         }
-        //TODO: 注文確認画面へ繊遷移
+        // 注文確認画面へ繊遷移
         Intent intent = new Intent(this, OrderCheckActivity.class);
         startActivity(intent);
     }
