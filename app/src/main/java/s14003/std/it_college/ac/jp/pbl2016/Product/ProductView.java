@@ -25,6 +25,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import s14003.std.it_college.ac.jp.pbl2016.ChangeAccountInformationActivity;
+import s14003.std.it_college.ac.jp.pbl2016.OrderCancelActivity;
 import s14003.std.it_college.ac.jp.pbl2016.OrderCheckActivity;
 import s14003.std.it_college.ac.jp.pbl2016.Product.MyHelper;
 import s14003.std.it_college.ac.jp.pbl2016.R;
@@ -187,7 +189,7 @@ public class ProductView extends AppCompatActivity {
             // リクエスト拒否メッセージ
             Log.d("CHECK_ORDER", "注文リストが空です");
 
-            // 確認ダイアログの生成
+            // 選択エラーのダイアログの生成
             AlertDialog.Builder alertDlg = new AlertDialog.Builder(this);
             alertDlg.setTitle("注文確認");
             alertDlg.setMessage("商品を選択してくださいね");
@@ -203,10 +205,51 @@ public class ProductView extends AppCompatActivity {
             return;
         }
 
+        // 確認ダイアログの生成
+        /*
+        AlertDialog.Builder acceptDlg = new AlertDialog.Builder(this);
+        acceptDlg.setTitle("注文確認");
+        acceptDlg.setMessage("");
+        acceptDlg.setPositiveButton(
+                "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+        acceptDlg.setNegativeButton(
+                "Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        return;
+                    }
+                });
+        // 表示
+        acceptDlg.create().show();
+        */
+
+
         // 注文リストをDBに登録
         for (ProductItem item : selectProduct) {
-            insertRecord(item);
+            boolean isErr = !insertRecord(item);
+
+            // DB登録エラー
+            if (isErr) {
+                // 確認ダイアログの生成
+                AlertDialog.Builder alertDlg = new AlertDialog.Builder(this);
+                alertDlg.setTitle("注文確認");
+                alertDlg.setMessage("商品を登録出来ませんでした");
+                alertDlg.setPositiveButton(
+                        "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                // 表示
+                alertDlg.create().show();
+                return;
+            }
         }
+
         // 注文確認画面へ繊遷移
         Intent intent = new Intent(this, OrderCheckActivity.class);
         startActivity(intent);
@@ -216,7 +259,7 @@ public class ProductView extends AppCompatActivity {
      * insert Method
      * 注文テーブルにレコードを追加する
      */
-    private void insertRecord(ProductItem item) {
+    private boolean insertRecord(ProductItem item) {
         //TODO: DB登録処理
         Log.d("CHECK_ORDER", "insertRecord()");
 
@@ -228,7 +271,6 @@ public class ProductView extends AppCompatActivity {
         ContentValues values = new ContentValues();
         values.put(MyHelper.ColumnsOrder.MAILADDRESS, mailaddr);
         values.put(MyHelper.ColumnsOrder.PRODUCTNAME, item.name);
-        values.put(MyHelper.ColumnsOrder.QUANTITY, item.stock);
         values.put(MyHelper.ColumnsOrder.PRICE, item.price);
         values.put(MyHelper.ColumnsOrder.PRODUCTID, item.id);
 
@@ -236,12 +278,14 @@ public class ProductView extends AppCompatActivity {
         long id = db.insert(MyHelper.TABLE_NAME_ORDER, null, values);
         if (id == -1) {
             Log.v("CHECK_ORDER", "行の追加に失敗したよ");
+            return false;
         }
         else {
             Log.v("CHECK_ORDER", "行の追加に成功したよ");
         }
 
         db.close();
+        return true;
     }
 
     /**
@@ -308,6 +352,7 @@ public class ProductView extends AppCompatActivity {
     }
 
     /**
+     * onCreateOptionsMenu Method
      * オプションメニューの項目設定
      * @param m
      * @return
@@ -331,12 +376,15 @@ public class ProductView extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem mi) {
         switch(mi.getItemId()) {
             case 0:
-                //TODO: Go to each activities.
+                //TODO: アカウント情報変更-削除
+                startActivity(new Intent(this, ChangeAccountInformationActivity.class));
                 return true;
             case 10:
-                //TODO: Go to each activities.
+                //TODO: 商品のキャンセル
+                startActivity(new Intent(this, OrderCancelActivity.class));
                 return true;
             case 20:
+                //TODO: DB更新(後で消す)
                 //スレッドを生成して起動します
                 (new Thread(new Runnable() {
                     @Override
