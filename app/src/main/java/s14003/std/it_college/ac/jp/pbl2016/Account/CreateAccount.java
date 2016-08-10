@@ -1,7 +1,10 @@
 package s14003.std.it_college.ac.jp.pbl2016.Account;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AlertDialog;
@@ -27,8 +30,6 @@ public class CreateAccount extends AppCompatActivity {
         setContentView(R.layout.activity_create_account);
 
         mdb = new Member_database(this);
-        //mdb.getReadableDatabase();
-
 
         final AlertDialog.Builder alert = new AlertDialog.Builder(this);
         final AlertDialog.Builder datealert = new AlertDialog.Builder(this);
@@ -79,10 +80,10 @@ public class CreateAccount extends AppCompatActivity {
                 if(date.Email.equals("")){
                     err_msg += "Emailを入力して下さい\n";
                 }
+                //この辺にEmailが被ってないかの処理
                 else if(serchMail(date.Email)){
                     err_msg += "このEmailは使われています\n";
                 }
-                //この辺にEmailが被ってないかの処理
                 else{
                     date_msg += "Email: " + date.Email + "\n";
                 }
@@ -120,6 +121,7 @@ public class CreateAccount extends AppCompatActivity {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     //Okボタンクリックした時の処理
+                                    //pass
                                 }
                             });
                     alert.create().show();
@@ -137,9 +139,10 @@ public class CreateAccount extends AppCompatActivity {
                                     }
                                     else{
                                         Toast.makeText(CreateAccount.this, "登録に成功しました", Toast.LENGTH_SHORT).show();
+                                        //Emailをしぇあする
+                                        setShare(date.Email);
                                         // 商品一覧画面に飛ばす
-                                        //Intent inte = new Intent(this, .class);
-                                        //startActivity(inte);
+                                        //StartActivity();
                                     }
                                 }
                             });
@@ -148,6 +151,7 @@ public class CreateAccount extends AppCompatActivity {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     //キャンセルボタン押した時の処理
+                                    //pass
                                 }
                             });
                     datealert.create().show();
@@ -181,7 +185,7 @@ public class CreateAccount extends AppCompatActivity {
         ContentValues blackvalues = new ContentValues();
         blackvalues.put(Member_database.Columns.MailAdddres, accountdata.Email);
         blackvalues.put(Member_database.Columns.totalorder, 0);
-        blackvalues.put(Member_database.Columns.Sharedpreferences, accountdata.Email);
+
 
         long ret;
         long black;
@@ -220,5 +224,16 @@ public class CreateAccount extends AppCompatActivity {
             return false;
         }
     }
+
+    private void setShare(String mail){
+        SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = data.edit();
+        editor.putString("Mailsave", mail);
+        editor.apply();
+    }
+    /*private void StartActivity(){
+        Intent inte = new Intent(this,ProductView.class);
+        startActivity(inte);
+    }*/
 }
 
