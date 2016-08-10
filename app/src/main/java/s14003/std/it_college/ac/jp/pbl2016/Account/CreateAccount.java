@@ -229,6 +229,7 @@ public class CreateAccount extends AppCompatActivity {
         SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = data.edit();
         editor.putString("Mailsave", mail);
+        editor.putInt("Totalordersave",0);
         editor.apply();
     }
     /*private void StartActivity(){
