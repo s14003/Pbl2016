@@ -28,8 +28,7 @@ public class Member_database extends SQLiteOpenHelper {
     private final static String set_CREATE_BLACKLIST =
             "create table " + BLACK_LIST_TABLE + "(" +
                     Columns.MailAdddres + " Text primary key," +
-                    Columns.totalorder + " int," +
-                    Columns.Sharedpreferences + " Text);";
+                    Columns.totalorder + " int);";
 
 
 
@@ -40,7 +39,6 @@ public class Member_database extends SQLiteOpenHelper {
         public static final String MailAdddres = "MailAddress";
         public static final String Address = "Address";
         public static final String password = "password";
-        public static final String Sharedpreferences = "Sharedpreferences";
         public static final String totalorder = "totalorder";
     }
 
