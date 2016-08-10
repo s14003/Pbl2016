@@ -16,12 +16,12 @@ public class Database extends SQLiteOpenHelper {
                     Columns._ID + " INTEGER primary key autoincrement," +
                     Columns.NAME + " TEXT," +
                     Columns.PRICE + " INTEGER," +
-                    Columns.QUANTITY + " INTEGER)";
+                    Columns.NUM + " INTEGER)";
 
     public interface Columns extends BaseColumns {
         public static final String NAME = "name";
         public static final String PRICE  = "price";
-        public static final String QUANTITY = "quantity";
+        public static final String NUM = "num";
     }
 
     public Database(Context context) {
