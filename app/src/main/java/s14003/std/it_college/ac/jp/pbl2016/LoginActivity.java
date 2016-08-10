@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,6 +36,7 @@ import java.util.List;
 
 import static android.Manifest.permission.READ_CONTACTS;
 import s14003.std.it_college.ac.jp.pbl2016.Product.ProductView;
+import s14003.std.it_college.ac.jp.pbl2016.Account.CreateAccount;
 
 /**
  * A login screen that offers login via email/password.
@@ -71,10 +73,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        //CreateAccount test
-        //Intent inte = new Intent(this, CreateAccount.class);
-        //startActivity(inte);
-
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
@@ -99,9 +97,28 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
+        Button btnCreateAccount = (Button)findViewById(R.id.btnCreateAccount);
+        btnCreateAccount.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createAccount();
+            }
+        });
+
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
+
+
+    /*
+    * CreateAccountに遷移
+    * */
+
+    private void createAccount() {
+        Intent it = new Intent(LoginActivity.this, CreateAccount.class);
+        startActivity(it);
+    }
+
 
     private void populateAutoComplete() {
         if (!mayRequestContacts()) {
@@ -296,7 +313,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         };
 
         int ADDRESS = 0;
-        int IS_PRIMARY = 1;
+        //int IS_PRIMARY = 1;
     }
 
     /**
@@ -342,7 +359,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                finish();
+                productView();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
@@ -354,6 +371,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
         }
+
+        private void productView() {
+            Intent it = new Intent(LoginActivity.this, ProductView.class);
+            startActivity(it);
+        }
+
     }
 }
 

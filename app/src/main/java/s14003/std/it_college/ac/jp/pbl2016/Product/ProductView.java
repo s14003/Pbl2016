@@ -25,7 +25,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import s14003.std.it_college.ac.jp.pbl2016.OrderCheckActivity;
+import s14003.std.it_college.ac.jp.pbl2016.OrderCheck.Ordercheck;
 import s14003.std.it_college.ac.jp.pbl2016.Product.MyHelper;
 import s14003.std.it_college.ac.jp.pbl2016.R;
 
@@ -208,7 +208,7 @@ public class ProductView extends AppCompatActivity {
             insertRecord(item);
         }
         // 注文確認画面へ繊遷移
-        Intent intent = new Intent(this, OrderCheckActivity.class);
+        Intent intent = new Intent(this, Ordercheck.class);
         startActivity(intent);
     }
 
