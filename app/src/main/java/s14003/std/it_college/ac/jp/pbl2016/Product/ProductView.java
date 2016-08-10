@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
@@ -260,16 +261,14 @@ public class ProductView extends AppCompatActivity {
      * 注文テーブルにレコードを追加する
      */
     private boolean insertRecord(ProductItem item) {
-        //TODO: DB登録処理
-        Log.d("CHECK_ORDER", "insertRecord()");
-
         SQLiteDatabase db = myHelper.getWritableDatabase();
 
         // 列に対応する値をセットする
         //TODO: アカウントメールアドレスを取得する
-        String mailaddr = "osamu.com";
+        SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
+        String mailAddr = data.getString("Mailsave", "www.xvideos.com");
         ContentValues values = new ContentValues();
-        values.put(MyHelper.ColumnsOrder.MAILADDRESS, mailaddr);
+        values.put(MyHelper.ColumnsOrder.MAILADDRESS, mailAddr);
         values.put(MyHelper.ColumnsOrder.PRODUCTNAME, item.name);
         values.put(MyHelper.ColumnsOrder.PRICE, item.price);
         values.put(MyHelper.ColumnsOrder.PRODUCTID, item.id);
@@ -294,7 +293,6 @@ public class ProductView extends AppCompatActivity {
      * @return
      */
     private boolean isSelectProduct() {
-        //TODO: チェックリスト確認
         Log.d("CHECK_ORDER", "isSelectProduct()");
         return selectProduct.size() > 0;
     }
@@ -363,6 +361,7 @@ public class ProductView extends AppCompatActivity {
         m.add(0, 0, 0, "アカウント情報変更・削除");
         m.add(0, 10, 1, "商品のキャンセル");
         m.add(0, 20, 2, "DB更新");
+        m.add(0, 30, 3, "メールアドレス登録");
         return true;
     }
 
@@ -401,7 +400,13 @@ public class ProductView extends AppCompatActivity {
                         });
                     }
                 })).start();
-
+                return true;
+            case 30:
+                //TODO: 後でけす
+                SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = data.edit();
+                editor.putString("Mailsave", "yogi.com");
+                editor.apply();
                 return true;
             default:
                 return false;
