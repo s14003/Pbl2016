@@ -163,7 +163,7 @@ public class ProductView extends AppCompatActivity {
         transition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                checkOrder();
+                checkOrderList();
             }
         });
     }
@@ -182,16 +182,13 @@ public class ProductView extends AppCompatActivity {
      * checkOrder Method
      * 注文確認
      */
-    public void checkOrder() {
-        Log.d("CHECK_ORDER", "ProductView.checkOrder");
+    public void checkOrderList() {
+        // ダイアログの生成
+        AlertDialog.Builder alertDlg = new AlertDialog.Builder(this);
+        alertDlg.setTitle("注文確認");
 
         if (!isSelectProduct()) {
-            // リクエスト拒否メッセージ
-            Log.d("CHECK_ORDER", "注文リストが空です");
-
-            // 選択エラーのダイアログの生成
-            AlertDialog.Builder alertDlg = new AlertDialog.Builder(this);
-            alertDlg.setTitle("注文確認");
+            // 選択エラーのダイアログ
             alertDlg.setMessage("商品を選択してくださいね");
             alertDlg.setPositiveButton(
                     "OK",
@@ -199,35 +196,38 @@ public class ProductView extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                         }
                     });
-            // 表示
             alertDlg.create().show();
 
             return;
         }
 
         // 確認ダイアログの生成
-        /*
         AlertDialog.Builder acceptDlg = new AlertDialog.Builder(this);
         acceptDlg.setTitle("注文確認");
-        acceptDlg.setMessage("");
+        acceptDlg.setMessage("注文を確定してもいいですか？");
         acceptDlg.setPositiveButton(
                 "OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        Log.d("ORDER", "OK clicked");
+                        insertOrderListRecord();
                     }
                 });
         acceptDlg.setNegativeButton(
                 "Cancel",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        return;
                     }
                 });
         // 表示
         acceptDlg.create().show();
-        */
+    }
 
-
+    /**
+     * insertOrderListRecord Method
+     * 注文リストをレコードに追加する
+     */
+    private void insertOrderListRecord() {
         // 注文リストをDBに登録
         for (ProductItem item : selectProduct) {
             boolean isErr = !insertRecord(item);
