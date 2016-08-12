@@ -26,13 +26,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-
-import s14003.std.it_college.ac.jp.pbl2016.OrderCheck.Ordercheck;
-
-/*import s14003.std.it_college.ac.jp.pbl2016.ChangeAccountInformationActivity;
+//import s14003.std.it_college.ac.jp.pbl2016.ChangeAccountInformationActivity;
 import s14003.std.it_college.ac.jp.pbl2016.OrderCancelActivity;
-import s14003.std.it_college.ac.jp.pbl2016.OrderCheckActivity;*/
-import s14003.std.it_college.ac.jp.pbl2016.Product.MyHelper;
+//import s14003.std.it_college.ac.jp.pbl2016.OrderCheckActivity;
+//import s14003.std.it_college.ac.jp.pbl2016.Product.MyHelper;
 import s14003.std.it_college.ac.jp.pbl2016.R;
 
 public class ProductView extends AppCompatActivity {
@@ -118,7 +115,6 @@ public class ProductView extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_view);
-
         // DBマネージャーを生成
         myHelper = new MyHelper(this);
 
@@ -254,9 +250,9 @@ public class ProductView extends AppCompatActivity {
             }
         }
 
-        // 注文確認画面へ繊遷移
-        Intent intent = new Intent(this, Ordercheck.class);
-        startActivity(intent);
+        /*// 注文確認画面へ繊遷移
+        Intent intent = new Intent(this, OrderCheckActivity.class);
+        startActivity(intent);*/
     }
 
     /**
@@ -383,7 +379,7 @@ public class ProductView extends AppCompatActivity {
                 return true;
             case 10:
                 //TODO: 商品のキャンセル
-//                startActivity(new Intent(this, OrderCancelActivity.class));
+                startActivity(new Intent(this, OrderCancelActivity.class));
                 return true;
             case 20:
                 //TODO: DB更新(後で消す)

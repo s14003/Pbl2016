@@ -94,7 +94,7 @@ public class Account_Profile extends AppCompatActivity {
         String target = getEmailshare();
         //queryのための変数達
         String[] targetcolumns = {Member_database.Columns.LastName,Member_database.Columns.FirstName,
-        Member_database.Columns.Address,Member_database.Columns.password};
+                Member_database.Columns.Address,Member_database.Columns.password};
         String serachcond = Member_database.Columns.MailAdddres + " = ?";
         String[] serachargs = {target};
 
