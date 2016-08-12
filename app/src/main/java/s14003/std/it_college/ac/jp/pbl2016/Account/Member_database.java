@@ -6,9 +6,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-/**
- * Created by s15009 on 16/08/03.
- */
 public class Member_database extends SQLiteOpenHelper {
 
     private final static String DB_NAME = "Member_master.db";

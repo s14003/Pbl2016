@@ -26,9 +26,12 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import s14003.std.it_college.ac.jp.pbl2016.ChangeAccountInformationActivity;
+
+import s14003.std.it_college.ac.jp.pbl2016.OrderCheck.Ordercheck;
+
+/*import s14003.std.it_college.ac.jp.pbl2016.ChangeAccountInformationActivity;
 import s14003.std.it_college.ac.jp.pbl2016.OrderCancelActivity;
-import s14003.std.it_college.ac.jp.pbl2016.OrderCheckActivity;
+import s14003.std.it_college.ac.jp.pbl2016.OrderCheckActivity;*/
 import s14003.std.it_college.ac.jp.pbl2016.Product.MyHelper;
 import s14003.std.it_college.ac.jp.pbl2016.R;
 
@@ -252,7 +255,7 @@ public class ProductView extends AppCompatActivity {
         }
 
         // 注文確認画面へ繊遷移
-        Intent intent = new Intent(this, OrderCheckActivity.class);
+        Intent intent = new Intent(this, Ordercheck.class);
         startActivity(intent);
     }
 
@@ -376,11 +379,11 @@ public class ProductView extends AppCompatActivity {
         switch(mi.getItemId()) {
             case 0:
                 //TODO: アカウント情報変更-削除
-                startActivity(new Intent(this, ChangeAccountInformationActivity.class));
+//                startActivity(new Intent(this, ChangeAccountInformationActivity.class));
                 return true;
             case 10:
                 //TODO: 商品のキャンセル
-                startActivity(new Intent(this, OrderCancelActivity.class));
+//                startActivity(new Intent(this, OrderCancelActivity.class));
                 return true;
             case 20:
                 //TODO: DB更新(後で消す)
