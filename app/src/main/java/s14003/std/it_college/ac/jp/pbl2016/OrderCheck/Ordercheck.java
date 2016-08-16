@@ -18,7 +18,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -185,7 +187,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
         //return itemList;
     }
-
+    private Spinner productSpinner;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -196,12 +198,33 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
         mHandler = new Handler();
 
 //        initTable();
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this, android.R.layout.simple_spinner_item);
+
+        for (int i = 1; i <= 100/*ここに数量を入れる*/; i++) {
+            adapter.add(String.valueOf(i));
+        }
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        productSpinner = (Spinner) findViewById(R.id.productspinner);
+        productSpinner.setAdapter(adapter);
+        productSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Spinner spinner = (Spinner) adapterView;
+                showToast(Integer.toString(spinner.getSelectedItemPosition()));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
 
         itemList = new ArrayList<ProductItem>();
-        adapter =
-                new ItemAdapter(getApplicationContext(), 0,
-                        itemList);
+//        adapter =
+//                new ItemAdapter(getApplicationContext(), 0,
+//                        itemList);
         adapter.setNotifyOnChange(true);
         ListView listView =
                 (ListView)findViewById(R.id.listProducts);
@@ -238,6 +261,11 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
         btnBuy.setOnClickListener(this);
 
 
+    }
+
+    //Toastで表示
+    private void showToast(String str) {
+        Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
     }
 
     private void setProductData(){
@@ -372,7 +400,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
             View view = inflater.inflate(R.layout.order_row, null, false);
             TextView nameView = (TextView)view.findViewById(R.id.name);
             TextView priceView = (TextView)view.findViewById(R.id.price);
-            TextView quantityView = (TextView)view.findViewById(R.id.num);
+            TextView quantityView = (TextView)view.findViewById(R.id.productspinner);
             ProductItem item = getItem(position);
             nameView.setText(item.name);
             priceView.setText(String.valueOf(item.price));
