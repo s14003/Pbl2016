@@ -232,9 +232,11 @@ public class CreateAccount extends AppCompatActivity {
         editor.putInt("Totalordersave",0);
         editor.apply();
     }
-    /*private void StartActivity(){
-        Intent inte = new Intent(this,ProductView.class);
-        startActivity(inte);
-    }*/
+    private void StartActivity(){
+        //Intent inte = new Intent(this,ProductView.class);
+        //under line test code
+        //Intent inte = new Intent(this,Account_Profile.class);
+        //startActivity(inte);
+    }
 }
 
