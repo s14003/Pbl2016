@@ -111,7 +111,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        finish();
+                        dialog.dismiss();
                     }
                 }
         );
@@ -124,7 +124,6 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
     }
-
     private class ProductItem {
         int _id;
         String name;
@@ -187,6 +186,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
         //return itemList;
     }
+
     private Spinner productSpinner;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -198,33 +198,11 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
         mHandler = new Handler();
 
 //        initTable();
-        final ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item);
-
-        for (int i = 1; i <= 100/*ここに数量を入れる*/; i++) {
-            adapter.add(String.valueOf(i));
-        }
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        productSpinner = (Spinner) findViewById(R.id.productspinner);
-        productSpinner.setAdapter(adapter);
-        productSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Spinner spinner = (Spinner) adapterView;
-                showToast(Integer.toString(spinner.getSelectedItemPosition()));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
 
         itemList = new ArrayList<ProductItem>();
-//        adapter =
-//                new ItemAdapter(getApplicationContext(), 0,
-//                        itemList);
+
+        adapter = new ItemAdapter(getApplicationContext(), 0, itemList);
+
         adapter.setNotifyOnChange(true);
         ListView listView =
                 (ListView)findViewById(R.id.listProducts);
@@ -246,6 +224,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
                 });
             }
         })).start();
+
 
         listView.setOnItemClickListener(this);
 
@@ -397,14 +376,42 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
             Log.d("ProductList", "getView");
 
+
             View view = inflater.inflate(R.layout.order_row, null, false);
             TextView nameView = (TextView)view.findViewById(R.id.name);
             TextView priceView = (TextView)view.findViewById(R.id.price);
-            TextView quantityView = (TextView)view.findViewById(R.id.productspinner);
+//            TextView quantityView = (TextView)view.findViewById(R.id.productspinner);
+
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(Ordercheck.this, R.layout.my_spinner_item);
+
+            for (int i = 1; i <= 100/*ここに数量を入れる*/; i++) {
+                adapter.add(String.valueOf(i));
+            }
+            adapter.setDropDownViewResource(R.layout.my_spinner_drop_down_item);
+            productSpinner = (Spinner)view.findViewById(R.id.productspinner);
+            productSpinner.setAdapter(adapter);
+            productSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    Spinner spinner = (Spinner) adapterView;
+                    showToast(Integer.toString(spinner.getSelectedItemPosition()));
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+            adapter.setNotifyOnChange(true);
+
+
+
+
             ProductItem item = getItem(position);
             nameView.setText(item.name);
             priceView.setText(String.valueOf(item.price));
-            quantityView.setText(String.valueOf(item.num));
+//            quantityView.setText(String.valueOf(item.num));
             return view;
 
         }
@@ -420,7 +427,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
     private List<ProductDbItem> itemDbList;
 
     private void setProductDbData(){
-
+//
 //        itemDbList = new ArrayList<ProductDbItem>();
 //
 //        ProductDbItem item = new ProductDbItem();
