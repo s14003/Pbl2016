@@ -1,5 +1,6 @@
 package s14003.std.it_college.ac.jp.pbl2016.Product;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -158,7 +159,40 @@ public class OrderCancelActivity extends AppCompatActivity {
             sb.append(item.productName + " ");
             sb.append(item.quantity + " ");
             Log.d("delete", sb.toString());
+            deleteRecord(item);
         }
+    }
+    /**
+     * deleteRecord Method
+     * 注文テーブルにレコードを追加する
+     */
+    private boolean deleteRecord(OrderItem item) {
+        Log.d("deleteRecord", "del oId" + String.valueOf(item.orderId));
+        SQLiteDatabase db = myHelper.getWritableDatabase();
+
+        // 列に対応する値をセットする
+        ContentValues values = new ContentValues();
+        values.put(MyHelper.ColumnsOrderAfter.MAILADDRESS, item.mailAddress);
+        values.put(MyHelper.ColumnsOrderAfter.PRODUCTNAME, item.productName);
+        values.put(MyHelper.ColumnsOrderAfter.QUANTITY, item.productName);
+        values.put(MyHelper.ColumnsOrderAfter.PRICE, item.price);
+        values.put(MyHelper.ColumnsOrderAfter.PRODUCTID, item.productId);
+
+        // データベースに行を追加する
+        String whereClause = MyHelper.ColumnsOrderAfter.ORDERID + " = ?";
+        String whereArgs[] = {String.valueOf(item.orderId)};
+        //long id = db.delete(MyHelper.TABLE_NAME_ORDER_AFTER, whereClause, whereArgs);
+        long id = db.delete(MyHelper.TABLE_NAME_ORDER_AFTER, "orderid = 1", null);
+        if (id == -1) {
+            Log.d("CHECK_ORDER", "レコードの削除に失敗したよ");
+            return false;
+        }
+        else {
+            Log.d("CHECK_ORDER", "レコードの削除に成功したよ");
+        }
+
+        db.close();
+        return true;
     }
 
     /**

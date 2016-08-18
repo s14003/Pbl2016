@@ -40,6 +40,8 @@
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:scaleX="1.5"
+        android:scaleY="1.5"
         android:id="@+id/checkBox"
         android:textColor="@android:color/black"
         android:layout_marginRight="30dp"

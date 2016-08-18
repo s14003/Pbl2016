@@ -29,15 +29,6 @@
         android:layout_weight="0.50"
         android:choiceMode="multipleChoice"/>
 
-    <!--Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="データベース更新"
-        android:id="@+id/btn_ini"
-        android:layout_below="@+id/list_view"
-        android:layout_alignParentStart="true"
-        android:layout_gravity="center_horizontal" /-->
-
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
