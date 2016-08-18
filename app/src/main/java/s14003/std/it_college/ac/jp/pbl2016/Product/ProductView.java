@@ -27,9 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import s14003.std.it_college.ac.jp.pbl2016.ChangeAccountInformationActivity;
-import s14003.std.it_college.ac.jp.pbl2016.OrderCancelActivity;
 import s14003.std.it_college.ac.jp.pbl2016.OrderCheckActivity;
-import s14003.std.it_college.ac.jp.pbl2016.Product.MyHelper;
 import s14003.std.it_college.ac.jp.pbl2016.R;
 
 public class ProductView extends AppCompatActivity {
@@ -46,7 +44,7 @@ public class ProductView extends AppCompatActivity {
      */
     private class ProductItem {
         public int _id;
-        public String id;
+        public int id;
         public String name;
         public int price;
         public int stock;
@@ -135,7 +133,7 @@ public class ProductView extends AppCompatActivity {
         (new Thread(new Runnable() {
             @Override
             public void run() {
-                setProductData();
+                selectProductList();
 
                 //メインスレッドのメッセージキューにメッセージを登録します。
                 mHandler.post(new Runnable (){
@@ -231,6 +229,8 @@ public class ProductView extends AppCompatActivity {
     private void insertOrderListRecord() {
         // 注文リストをDBに登録
         for (ProductItem item : selectProduct) {
+            Log.d("insertOrderListRecord", String.valueOf(item.id));
+
             boolean isErr = !insertRecord(item);
 
             // DB登録エラー
@@ -261,6 +261,7 @@ public class ProductView extends AppCompatActivity {
      * 注文テーブルにレコードを追加する
      */
     private boolean insertRecord(ProductItem item) {
+        Log.d("insertOrderListRecord", String.valueOf(item.id));
         SQLiteDatabase db = myHelper.getWritableDatabase();
 
         // 列に対応する値をセットする
@@ -297,11 +298,6 @@ public class ProductView extends AppCompatActivity {
         return selectProduct.size() > 0;
     }
 
-    private void setProductData() {
-        Log.d("", "setProductData()");
-        selectProductList();
-    }
-
     /**
      * selectProductList Method
      * 商品DBから情報を取得して表示
@@ -333,7 +329,7 @@ public class ProductView extends AppCompatActivity {
         do {
             ProductItem item = new ProductItem();
             item._id = cursor.getInt(_idIndex);
-            item.id = cursor.getString(idIndex);
+            item.id = cursor.getInt(idIndex);
             item.name = cursor.getString(nameIndex);
             item.price = cursor.getInt(priceIndex);
             item.stock = cursor.getInt(stockIndex);
@@ -389,7 +385,7 @@ public class ProductView extends AppCompatActivity {
                     @Override
                     public void run() {
                         initTable();
-                        setProductData();
+                        selectProductList();
 
                         //メインスレッドのメッセージキューにメッセージを登録します。
                         mHandler.post(new Runnable (){
@@ -443,62 +439,69 @@ public class ProductView extends AppCompatActivity {
         }
     }
 
+    /**
+     * ProductDbItem Class
+     *
+     */
     private class ProductDbItem {
-        String id;
+        int id;
         String name;
         int price;
         int stock;
     }
 
+    /**
+     * setProductDbData Method
+     * 商品リストの仮のデータをセットする
+     */
     private List<ProductDbItem> itemDbList;
-
     public void setProductDbData() {
         itemDbList = new ArrayList<ProductDbItem>();
 
         ProductDbItem item = new ProductDbItem();
-        item.id = "A01";
+        item.id = 1;
         item.name = "赤鉛筆";
         item.price = 50;
         item.stock = 100;
         itemDbList.add(item);
 
         item = new ProductDbItem();
-        item.id = "A02";
+        item.id = 2;
         item.name = "青鉛筆";
         item.price = 50;
         item.stock = 50;
         itemDbList.add(item);
 
         item = new ProductDbItem();
-        item.id = "A03";
+        item.id = 3;
         item.name = "消しゴム";
         item.price = 75;
         item.stock = 1000;
         itemDbList.add(item);
 
         item = new ProductDbItem();
-        item.id = "A04";
+        item.id = 4;
         item.name = "三角定規";
         item.price = 120;
         item.stock = 10;
         itemDbList.add(item);
 
         item = new ProductDbItem();
-        item.id = "A05";
+        item.id = 5;
         item.name = "ボールペン黒";
         item.price = 80;
         item.stock = 25;
         itemDbList.add(item);
 
         item = new ProductDbItem();
-        item.id = "A06";
+        item.id = 6;
         item.name = "ボールペン赤";
         item.price = 90;
         item.stock = 24;
         itemDbList.add(item);
 
         item = new ProductDbItem();
-        item.id = "A07";
+        item.id = 7;
         item.name = "３色ボールペン";
         item.price = 120;
         item.stock = 30;

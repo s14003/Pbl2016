@@ -16,7 +16,7 @@ public class MyHelper extends SQLiteOpenHelper {
     public static final String TABLE_NAME = "products";
     private static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "(" +
             Columns._ID + " INTEGER primary key autoincrement," +
-            Columns.ID + " TEXT," +
+            Columns.ID + " INTEGER," +
             Columns.NAME + " TEXT," +
             Columns.PRICE + " INTEGER," +
             Columns.STOCK + " INTEGER" + ")";
@@ -48,6 +48,26 @@ public class MyHelper extends SQLiteOpenHelper {
         public static final String PRODUCTID = "productid";
     }
 
+    // 発注テーブル設定
+    public static final String TABLE_NAME_ORDER_AFTER = "OrderAfterlist";
+    private static final String SQL_CREATE_TABLE_ORDER_AFTER =  "CREATE TABLE " + TABLE_NAME_ORDER_AFTER + "(" +
+            ColumnsOrderAfter.ORDERID + " INTEGER primary key autoincrement," +
+            ColumnsOrderAfter.MAILADDRESS + " TEXT," +
+            ColumnsOrderAfter.PRODUCTNAME + " TEXT," +
+            ColumnsOrderAfter.QUANTITY + " INTEGER," +
+            ColumnsOrderAfter.PRICE + " INTEGER," +
+            ColumnsOrderAfter.PRODUCTID + " INTEGER)";
+
+
+    public interface ColumnsOrderAfter extends BaseColumns {
+        public static final String ORDERID = "orderid";
+        public static final String MAILADDRESS = "mailaddress";
+        public static final String PRODUCTNAME = "productname";
+        public static final String QUANTITY = "quantity";
+        public static final String PRICE = "price";
+        public static final String PRODUCTID = "productid";
+    }
+
     public MyHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
@@ -56,6 +76,7 @@ public class MyHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_TABLE);
         db.execSQL(SQL_CREATE_TABLE_ORDER);
+        db.execSQL(SQL_CREATE_TABLE_ORDER_AFTER);
 
         // 仮の値
         //db.execSQL("insert into Orderlist(MAILADDRESS, PRODUCTNAME, QUANTITY, PRICE, PRODUCTID) values('osamu.com', 'ちくわ', 10, 100, 1);");
