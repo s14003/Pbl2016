@@ -58,12 +58,14 @@ public class OrderCancelActivity extends AppCompatActivity {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            View view = inflater.inflate(R.layout.product_row, null, false);
-            TextView nameView = (TextView)view.findViewById(R.id.name);
-            TextView priceView = (TextView)view.findViewById(R.id.price);
+            View view = inflater.inflate(R.layout.activity_order_cancel_row, null, false);
+            TextView nameView = (TextView)view.findViewById(R.id.idname_tv);
+            TextView priceView = (TextView)view.findViewById(R.id.price_tv);
+            TextView quantityView = (TextView)view.findViewById(R.id.quantity_tv);
             OrderItem item = getItem(position);
             nameView.setText(item.productName);
             priceView.setText(String.valueOf(item.price));
+            quantityView.setText(String.valueOf(item.quantity));
 
             final CheckBox checkBox = (CheckBox)view.findViewById(R.id.checkBox);
 
@@ -75,7 +77,8 @@ public class OrderCancelActivity extends AppCompatActivity {
                     if (checkBox.isChecked()) {
                         selectProduct.add(orderItemList.get(position));
                         Log.d("cancel", "select:" + selectProduct.get(selectProduct.size() - 1).productName
-                                + " orderId:" + selectProduct.get(selectProduct.size() - 1).orderId);
+                                + " orderId:" + selectProduct.get(selectProduct.size() - 1).orderId
+                                + " quantity:" + selectProduct.get(selectProduct.size() - 1).quantity);
                     } else {
                         selectProduct.remove(orderItemList.get(position));
                     }
