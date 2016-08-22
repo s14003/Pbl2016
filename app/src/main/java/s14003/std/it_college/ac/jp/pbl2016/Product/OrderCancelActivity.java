@@ -74,7 +74,8 @@ public class OrderCancelActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     if (checkBox.isChecked()) {
                         selectProduct.add(orderItemList.get(position));
-                        Log.d("cancel", "select:" + selectProduct.get(selectProduct.size() - 1).productName);
+                        Log.d("cancel", "select:" + selectProduct.get(selectProduct.size() - 1).productName
+                                + " orderId:" + selectProduct.get(selectProduct.size() - 1).orderId);
                     } else {
                         selectProduct.remove(orderItemList.get(position));
                     }
@@ -123,16 +124,23 @@ public class OrderCancelActivity extends AppCompatActivity {
 
         //listView.setOnItemClickListener(this);
 
-        /*
+        //*
         // 戻るボタン
-        Button btnLogout = (Button) findViewById(R.id.btn_logout);
-        btnLogout.setOnClickListener(new View.OnClickListener() {
+        Button btnBack = (Button) findViewById(R.id.btn_back);
+        btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                logOut();
+                //logOut();
+                Log.d("btnBack.onClick", "btnBack.onClick");
+                orderItemList = new ArrayList<OrderItem>();
+                adapter = new ItemAdapter(getApplicationContext(), 0, orderItemList);
+                adapter.setNotifyOnChange(true);
+                ListView listView = (ListView)findViewById(R.id.list_view);
+                listView.setAdapter(adapter);
+                selectProductList();
             }
         });
-        */
+        //*/
 
         // 注文キャンセルボタン
         Button transition = (Button) findViewById(R.id.btn_order_cancel);
@@ -141,6 +149,12 @@ public class OrderCancelActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //TODO: DBからチェックリストのレコードをデリートするエリートサイヤ人ベジータ
                 delete();
+                orderItemList = new ArrayList<OrderItem>();
+                adapter = new ItemAdapter(getApplicationContext(), 0, orderItemList);
+                adapter.setNotifyOnChange(true);
+                ListView listView = (ListView)findViewById(R.id.list_view);
+                listView.setAdapter(adapter);
+                selectProductList();
             }
         });
     }
@@ -162,6 +176,7 @@ public class OrderCancelActivity extends AppCompatActivity {
             deleteRecord(item);
         }
     }
+
     /**
      * deleteRecord Method
      * 注文テーブルにレコードを追加する
@@ -181,8 +196,9 @@ public class OrderCancelActivity extends AppCompatActivity {
         // データベースに行を追加する
         String whereClause = MyHelper.ColumnsOrderAfter.ORDERID + " = ?";
         String whereArgs[] = {String.valueOf(item.orderId)};
-        //long id = db.delete(MyHelper.TABLE_NAME_ORDER_AFTER, whereClause, whereArgs);
-        long id = db.delete(MyHelper.TABLE_NAME_ORDER_AFTER, "orderid = 1", null);
+        Log.d("deleteRecord", whereClause + whereArgs[0]);
+        long id = db.delete(MyHelper.TABLE_NAME_ORDER_AFTER, whereClause, whereArgs);
+        //long id = db.delete(MyHelper.TABLE_NAME_ORDER_AFTER, "orderid = 1", null);
         if (id == -1) {
             Log.d("CHECK_ORDER", "レコードの削除に失敗したよ");
             return false;
@@ -209,12 +225,13 @@ public class OrderCancelActivity extends AppCompatActivity {
                 MyHelper.ColumnsOrderAfter.MAILADDRESS,
                 MyHelper.ColumnsOrderAfter.PRODUCTNAME,
                 MyHelper.ColumnsOrderAfter.PRICE,
-                MyHelper.ColumnsOrderAfter.QUANTITY
+                MyHelper.ColumnsOrderAfter.QUANTITY,
+                MyHelper.ColumnsOrderAfter.ORDERID
         };
         // 発注者のメールアドレスとログインアドレスが同じレコードのみを指定
         String selection = MyHelper.ColumnsOrderAfter.MAILADDRESS + " = ?";
         SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
-        String mailAddr = data.getString("Mailsave", "www.xvideos.com");
+        String mailAddr = data.getString("Mailsave", "failed.com");
         String[] selectionArgs = {mailAddr};
         Cursor cursor = db.query(MyHelper.TABLE_NAME_ORDER_AFTER, cols, selection, selectionArgs, null, null,
                 MyHelper.ColumnsOrder.ORDERID + " ASC");
@@ -230,6 +247,7 @@ public class OrderCancelActivity extends AppCompatActivity {
         int productnameIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.PRODUCTNAME);
         int priceIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.PRICE);
         int quantityIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.QUANTITY);
+        int orderIdIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.ORDERID);
 
         // 5. 行を読み込む
         orderItemList.removeAll(orderItemList);
@@ -238,6 +256,7 @@ public class OrderCancelActivity extends AppCompatActivity {
             item.productName = cursor.getString(productnameIndex);
             item.price = cursor.getInt(priceIndex);
             item.quantity = cursor.getInt(quantityIndex);
+            item.orderId = cursor.getInt(orderIdIndex);
 
             orderItemList.add(item);
         } while (cursor.moveToNext());

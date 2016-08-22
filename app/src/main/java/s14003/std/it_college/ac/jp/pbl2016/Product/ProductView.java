@@ -127,12 +127,12 @@ public class ProductView extends AppCompatActivity {
         ListView listView = (ListView)findViewById(R.id.list_view);
         listView.setAdapter(adapter);
 
-
         // Table取得したデータをListViewにセットするためのスレッド
         //*
         (new Thread(new Runnable() {
             @Override
             public void run() {
+                initTable();
                 selectProductList();
 
                 //メインスレッドのメッセージキューにメッセージを登録します。
@@ -267,7 +267,7 @@ public class ProductView extends AppCompatActivity {
         // 列に対応する値をセットする
         //TODO: アカウントメールアドレスを取得する
         SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
-        String mailAddr = data.getString("Mailsave", "www.xvideos.com");
+        String mailAddr = data.getString("Mailsave", "failed.com");
         ContentValues values = new ContentValues();
         values.put(MyHelper.ColumnsOrder.MAILADDRESS, mailAddr);
         values.put(MyHelper.ColumnsOrder.PRODUCTNAME, item.name);
