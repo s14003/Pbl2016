@@ -31,7 +31,6 @@ import s14003.std.it_college.ac.jp.pbl2016.OrderCheckActivity;
 import s14003.std.it_college.ac.jp.pbl2016.R;
 
 public class ProductView extends AppCompatActivity {
-
     private MyHelper myHelper;
     private Handler mHandler;
     private List<ProductItem> itemList;
@@ -173,7 +172,7 @@ public class ProductView extends AppCompatActivity {
      */
     public void logOut() {
         Log.d("LOGOUT", "ProductView.logOut");
-        //test
+        //TODO: 後でけす
         if (isSelectProduct()) selectProduct.remove(0);
     }
 
@@ -265,9 +264,9 @@ public class ProductView extends AppCompatActivity {
         SQLiteDatabase db = myHelper.getWritableDatabase();
 
         // 列に対応する値をセットする
-        //TODO: アカウントメールアドレスを取得する
+        // アカウントメールアドレスを取得する
         SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
-        String mailAddr = data.getString("Mailsave", "failed.com");
+        String mailAddr = "failed.com";//data.getString("Mailsave", "failed.com");
         ContentValues values = new ContentValues();
         values.put(MyHelper.ColumnsOrder.MAILADDRESS, mailAddr);
         values.put(MyHelper.ColumnsOrder.PRODUCTNAME, item.name);
@@ -307,8 +306,8 @@ public class ProductView extends AppCompatActivity {
         SQLiteDatabase db = myHelper.getReadableDatabase();
 
         // 2. query()を呼び、検索を行う
-        Cursor cursor = db.query(MyHelper.TABLE_NAME, null, null, null, null, null,
-                MyHelper.Columns._ID + " ASC");
+        Cursor cursor = db.query(MyHelper.TABLE_NAME_PRODUCTS, null, null, null, null, null,
+                MyHelper.ColumnsProducts._ID + " ASC");
 
         // 3. 読み込み位置を先頭にする、falseの場合は結果０件
         if (!cursor.moveToFirst()) {
@@ -318,11 +317,11 @@ public class ProductView extends AppCompatActivity {
         }
 
         // 4. 列のindex(位置)を取得する
-        int _idIndex = cursor.getColumnIndex(MyHelper.Columns._ID);
-        int idIndex = cursor.getColumnIndex(MyHelper.Columns.ID);
-        int nameIndex = cursor.getColumnIndex(MyHelper.Columns.NAME);
-        int priceIndex = cursor.getColumnIndex(MyHelper.Columns.PRICE);
-        int stockIndex = cursor.getColumnIndex(MyHelper.Columns.STOCK);
+        int _idIndex = cursor.getColumnIndex(MyHelper.ColumnsProducts._ID);
+        int idIndex = cursor.getColumnIndex(MyHelper.ColumnsProducts.ID);
+        int nameIndex = cursor.getColumnIndex(MyHelper.ColumnsProducts.NAME);
+        int priceIndex = cursor.getColumnIndex(MyHelper.ColumnsProducts.PRICE);
+        int stockIndex = cursor.getColumnIndex(MyHelper.ColumnsProducts.STOCK);
 
         // 5. 行を読み込む
         itemList.removeAll(itemList);
@@ -401,7 +400,7 @@ public class ProductView extends AppCompatActivity {
                 //TODO: 後でけす
                 SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = data.edit();
-                editor.putString("Mailsave", "yogi.com");
+                editor.putString("Mailsave", "failed.com");
                 editor.apply();
                 return true;
             default:
@@ -417,7 +416,7 @@ public class ProductView extends AppCompatActivity {
         SQLiteDatabase db = myHelper.getWritableDatabase();
 
         // 一旦を削除
-        int count = db.delete(MyHelper.TABLE_NAME, null, null);
+        int count = db.delete(MyHelper.TABLE_NAME_PRODUCTS, null, null);
 
         setProductDbData();
 
@@ -426,13 +425,13 @@ public class ProductView extends AppCompatActivity {
 
             // 列に対応する値をセットする
             ContentValues values = new ContentValues();
-            values.put(MyHelper.Columns.ID, item.id);
-            values.put(MyHelper.Columns.NAME, item.name);
-            values.put(MyHelper.Columns.PRICE, item.price);
-            values.put(MyHelper.Columns.STOCK, item.stock);
+            values.put(MyHelper.ColumnsProducts.ID, item.id);
+            values.put(MyHelper.ColumnsProducts.NAME, item.name);
+            values.put(MyHelper.ColumnsProducts.PRICE, item.price);
+            values.put(MyHelper.ColumnsProducts.STOCK, item.stock);
 
             // データベースに行を追加する
-            long id = db.insert(MyHelper.TABLE_NAME, null, values);
+            long id = db.insert(MyHelper.TABLE_NAME_PRODUCTS, null, values);
             if (id == -1) {
                 Log.d("Database", "failed");
             }

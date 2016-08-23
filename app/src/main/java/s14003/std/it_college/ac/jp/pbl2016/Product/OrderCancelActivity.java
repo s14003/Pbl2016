@@ -2,10 +2,13 @@ package s14003.std.it_college.ac.jp.pbl2016.Product;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,7 +32,7 @@ public class OrderCancelActivity extends AppCompatActivity {
     private Handler mHandler;
     private List<OrderItem> orderItemList;
     private ItemAdapter adapter;
-    private List<OrderItem> selectProduct = new ArrayList<>();
+    private List<OrderItem> selectProduct = new ArrayList<>();  //選択中の商品リスト
 
     /**
      * OrderItem Class
@@ -69,7 +72,7 @@ public class OrderCancelActivity extends AppCompatActivity {
 
             final CheckBox checkBox = (CheckBox)view.findViewById(R.id.checkBox);
 
-            selectProduct = new ArrayList<OrderItem>();
+            //selectProduct = new ArrayList<OrderItem>();
             //final ArrayList<Person> finalSelectPerson = selectPerson;
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -82,6 +85,7 @@ public class OrderCancelActivity extends AppCompatActivity {
                     } else {
                         selectProduct.remove(orderItemList.get(position));
                     }
+                    Log.d("select", "selectProduct.size():" + String.valueOf(selectProduct.size()));
                 }
             });
 
@@ -133,14 +137,8 @@ public class OrderCancelActivity extends AppCompatActivity {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //logOut();
-                Log.d("btnBack.onClick", "btnBack.onClick");
-                orderItemList = new ArrayList<OrderItem>();
-                adapter = new ItemAdapter(getApplicationContext(), 0, orderItemList);
-                adapter.setNotifyOnChange(true);
-                ListView listView = (ListView)findViewById(R.id.list_view);
-                listView.setAdapter(adapter);
-                selectProductList();
+                Log.d("OrderCancelActivity", "btnBack.back");
+                back();
             }
         });
         //*/
@@ -150,68 +148,209 @@ public class OrderCancelActivity extends AppCompatActivity {
         transition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO: DBからチェックリストのレコードをデリートするエリートサイヤ人ベジータ
-                delete();
-                orderItemList = new ArrayList<OrderItem>();
-                adapter = new ItemAdapter(getApplicationContext(), 0, orderItemList);
-                adapter.setNotifyOnChange(true);
-                ListView listView = (ListView)findViewById(R.id.list_view);
-                listView.setAdapter(adapter);
-                selectProductList();
+                setOrderCancelDialog();
             }
         });
     }
 
+    private void back() {
+        selectProduct.clear();
+        startActivity(new Intent(this, ProductView.class));
+        //TODO: 後でけす
+        //*
+        SQLiteDatabase db = this.myHelper.getReadableDatabase();
+        Cursor cursor = db.query(MyHelper.TABLE_NAME_BLACKLIST, new String[] {MyHelper.ColumnsBlacklist.TOTALORDER, MyHelper.ColumnsBlacklist.MAILADDRESS},
+                MyHelper.ColumnsBlacklist.MAILADDRESS + " = \"failed.com\"", null, null, null, null);
+
+        if (!cursor.moveToFirst()) {
+            cursor.close();
+            db.close();
+            return;
+        }
+        Log.d("back", String.valueOf(cursor.getInt(cursor.getColumnIndex(MyHelper.ColumnsBlacklist.TOTALORDER))));
+        cursor.close();
+        db.close();
+        //*/
+    }
+
+    private void setOrderCancelDialog() {
+        // リスト表示用のアラートダイアログ
+        adapter = new ItemAdapter(getApplicationContext(), 0, this.selectProduct);
+        adapter.setNotifyOnChange(true);
+        ListView listView = new ListView(this);
+        listView.setAdapter(adapter);
+
+        AlertDialog.Builder listDlg = new AlertDialog.Builder(this);
+        listDlg.setTitle("商品のキャンセル");
+        listDlg.setView(listView);
+
+        listDlg.setPositiveButton(
+                "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // OK ボタンクリック処理
+                        updateTable();
+                    }
+                });
+        listDlg.setNegativeButton(
+                "Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Cancel ボタンクリック処理
+                    }
+                });
+        // 表示
+        listDlg.create().show();
+    }
+
+    private void updateTable() {
+        // 以下をトライザクション処理で行う
+        // 一つでもエラーがあると全てロールバックする
+        SQLiteDatabase dbWrite = myHelper.getWritableDatabase();
+        dbWrite.beginTransaction();
+        try {
+            for (OrderItem item : selectProduct) {
+                updateProductListTable(dbWrite, item);
+                updateBlackListTable(dbWrite, item);
+                updateOrderAfterListTable(dbWrite, item);
+            }
+            dbWrite.setTransactionSuccessful();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            dbWrite.endTransaction();
+        }
+        selectProduct.clear();
+        updateSelectProductList();
+    }
+
     /**
-     * delete Method
-     * DBからチェックリストのレコードをデリート
+     * updateProductListTable Method
+     * 商品テーブルの在庫数を更新する
+     * @param item
      */
-    private void delete() {
-        for (OrderItem item : selectProduct) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(item.mailAddress + " ");
-            sb.append(item.orderId + " ");
-            sb.append(item.price + " ");
-            sb.append(item.productId + " ");
-            sb.append(item.productName + " ");
-            sb.append(item.quantity + " ");
-            Log.d("delete", sb.toString());
-            deleteRecord(item);
+    private void updateProductListTable(SQLiteDatabase dbWrite, OrderItem item) throws Exception {
+        //TODO: 商品テーブルの在庫数に注文テーブルの数量を加算する
+        // 商品名、数量を指定
+        String[] cols = {
+                MyHelper.ColumnsProducts.NAME,
+                MyHelper.ColumnsProducts.STOCK
+        };
+        String selection = MyHelper.ColumnsProducts.NAME + " = ?";
+        String[] selectionArgs = {item.productName};
+        Cursor cursor = dbWrite.query(MyHelper.TABLE_NAME_PRODUCTS, cols, selection, selectionArgs, null, null, null);
+
+        // 読み込み位置を先頭にする、falseの場合は結果０件
+        if (!cursor.moveToFirst()) {
+            cursor.close();
+            //dbRead.close();
+            return;
+        }
+
+        // 現在の商品テーブルのストックに注文テーブルの数量を加算した値を求める
+        int stockIndex = cursor.getColumnIndex(MyHelper.ColumnsProducts.STOCK);
+        int updateStock = cursor.getInt(stockIndex) + item.quantity;
+
+        // Cursorを閉じる
+        cursor.close();
+
+        // 列に対応する値をセットする
+        ContentValues values = new ContentValues();
+        values.put(MyHelper.ColumnsProducts.STOCK, updateStock);
+
+        // 加算した値をテーブルに反映させる
+        long id = dbWrite.update(MyHelper.TABLE_NAME_PRODUCTS, values, selection, selectionArgs);
+        if (id == -1) {
+            Log.v("CHECK_ORDER", "行の追加に失敗したよ");
+        }
+        else {
+            Log.v("CHECK_ORDER", "行の追加に成功したよ");
         }
     }
 
     /**
-     * deleteRecord Method
-     * 注文テーブルにレコードを追加する
+     * updateBlacckListTable Method
+     * ブラックリストテーブルの注文合計額を更新をする
+     * @param item
+     * @return
      */
-    private boolean deleteRecord(OrderItem item) {
-        Log.d("deleteRecord", "del oId" + String.valueOf(item.orderId));
-        SQLiteDatabase db = myHelper.getWritableDatabase();
+    private boolean updateBlackListTable(SQLiteDatabase dbWrite, OrderItem item) throws Exception {
+        boolean successful = false;
+        //TODO: ブラックリストテーブルの注文合計額から(発注.数量 * 発注.数量)を減算する
+        // メールアドレス、注文合計額を指定
+        String[] cols = {
+                MyHelper.ColumnsBlacklist.MAILADDRESS,
+                MyHelper.ColumnsBlacklist.TOTALORDER
+        };
+        String selection = MyHelper.ColumnsBlacklist.MAILADDRESS + " = ?";
+        // アカウントメールアドレスを取得する
+        SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
+        String mailAddr = data.getString("Mailsave", "failed.com");
+        String[] selectionArgs = {mailAddr};
+        Cursor cursor = dbWrite.query(MyHelper.TABLE_NAME_BLACKLIST, cols, selection, selectionArgs, null, null, null);
+
+        // 3. 読み込み位置を先頭にする、falseの場合は結果０件
+        if (!cursor.moveToFirst()) {
+            cursor.close();
+            //dbRead.close();
+            return false;
+        }
+
+        // ブラックリストテーブルの注文合計額から(発注.数量 * 発注.数量)を減算した値を求める
+        int totalorderIndex = cursor.getColumnIndex(MyHelper.ColumnsBlacklist.TOTALORDER);
+        int updateTotalOrder = cursor.getInt(totalorderIndex) - (item.price * item.quantity);
+        Log.d("updateProductListTable", String.valueOf(updateTotalOrder));
+
+        // 6. Cursorを閉じる
+        cursor.close();
 
         // 列に対応する値をセットする
         ContentValues values = new ContentValues();
-        values.put(MyHelper.ColumnsOrderAfter.MAILADDRESS, item.mailAddress);
-        values.put(MyHelper.ColumnsOrderAfter.PRODUCTNAME, item.productName);
-        values.put(MyHelper.ColumnsOrderAfter.QUANTITY, item.productName);
-        values.put(MyHelper.ColumnsOrderAfter.PRICE, item.price);
-        values.put(MyHelper.ColumnsOrderAfter.PRODUCTID, item.productId);
+        values.put(MyHelper.ColumnsBlacklist.TOTALORDER, updateTotalOrder);
 
-        // データベースに行を追加する
+        // 加算した値をテーブルに反映させる
+        long id = dbWrite.update(MyHelper.TABLE_NAME_BLACKLIST, values, selection, selectionArgs);
+        if (id == -1) {
+            Log.v("CHECK_ORDER", "行の追加に失敗したよ");
+        }
+        else {
+            Log.v("CHECK_ORDER", "行の追加に成功したよ");
+        }
+
+        return successful;
+    }
+
+    /**
+     * updateOrderAfterListTable Method
+     * DBからチェックリストのレコードを削除
+     */
+    private void updateOrderAfterListTable(SQLiteDatabase dbWrite, OrderItem item) throws Exception {
+        //TODO: 注文テーブルからチェックリストのレコードを削除する
+        // データベースから発注IDが同じレコードを削除する
         String whereClause = MyHelper.ColumnsOrderAfter.ORDERID + " = ?";
         String whereArgs[] = {String.valueOf(item.orderId)};
-        Log.d("deleteRecord", whereClause + whereArgs[0]);
-        long id = db.delete(MyHelper.TABLE_NAME_ORDER_AFTER, whereClause, whereArgs);
-        //long id = db.delete(MyHelper.TABLE_NAME_ORDER_AFTER, "orderid = 1", null);
+        long id = dbWrite.delete(MyHelper.TABLE_NAME_ORDER_AFTER, whereClause, whereArgs);
         if (id == -1) {
             Log.d("CHECK_ORDER", "レコードの削除に失敗したよ");
-            return false;
         }
         else {
             Log.d("CHECK_ORDER", "レコードの削除に成功したよ");
         }
+    }
 
-        db.close();
-        return true;
+    /**
+     * updateSelectProductList Method
+     * 商品リストビューを更新する
+     */
+    private void updateSelectProductList() {
+        orderItemList.clear();
+        adapter = new ItemAdapter(getApplicationContext(), 0, orderItemList);
+        adapter.setNotifyOnChange(true);
+        ListView listView = (ListView)findViewById(R.id.list_view);
+        listView.setAdapter(adapter);
+        selectProductList();
     }
 
     /**

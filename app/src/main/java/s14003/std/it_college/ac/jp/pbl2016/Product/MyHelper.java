@@ -12,23 +12,23 @@ public class MyHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "product.db";
     private static final int DB_VERSION = 1;
 
-    // 商品テーブル設定
-    public static final String TABLE_NAME = "products";
-    private static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "(" +
-            Columns._ID + " INTEGER primary key autoincrement," +
-            Columns.ID + " INTEGER," +
-            Columns.NAME + " TEXT," +
-            Columns.PRICE + " INTEGER," +
-            Columns.STOCK + " INTEGER" + ")";
+    // 商品テーブル定義
+    public static final String TABLE_NAME_PRODUCTS = "Products";
+    private static final String SQL_CREATE_TABLE_PRODUCTS = "CREATE TABLE " + TABLE_NAME_PRODUCTS + "(" +
+            ColumnsProducts._ID + " INTEGER primary key autoincrement," +
+            ColumnsProducts.ID + " INTEGER," +
+            ColumnsProducts.NAME + " TEXT," +
+            ColumnsProducts.PRICE + " INTEGER," +
+            ColumnsProducts.STOCK + " INTEGER" + ")";
 
-    public interface Columns extends BaseColumns {
+    public interface ColumnsProducts extends BaseColumns {
         public static final String ID = "id";
         public static final String NAME = "name";
         public static final String PRICE = "price";
         public static final String STOCK = "stock";
     }
 
-    // 注文テーブル設定
+    // 注文テーブル定義
     public static final String TABLE_NAME_ORDER = "Orderlist";
     private static final String SQL_CREATE_TABLE_ORDER =  "CREATE TABLE " + TABLE_NAME_ORDER + "(" +
             ColumnsOrder.ORDERID + " INTEGER primary key autoincrement," +
@@ -37,7 +37,6 @@ public class MyHelper extends SQLiteOpenHelper {
             ColumnsOrder.QUANTITY + " INTEGER," +
             ColumnsOrder.PRICE + " INTEGER," +
             ColumnsOrder.PRODUCTID + " INTEGER)";
-
 
     public interface ColumnsOrder extends BaseColumns {
         public static final String ORDERID = "orderid";
@@ -48,7 +47,7 @@ public class MyHelper extends SQLiteOpenHelper {
         public static final String PRODUCTID = "productid";
     }
 
-    // 発注テーブル設定
+    // 発注テーブル定義
     public static final String TABLE_NAME_ORDER_AFTER = "OrderAfterlist";
     private static final String SQL_CREATE_TABLE_ORDER_AFTER =  "CREATE TABLE " + TABLE_NAME_ORDER_AFTER + "(" +
             ColumnsOrderAfter.ORDERID + " INTEGER primary key autoincrement," +
@@ -57,7 +56,6 @@ public class MyHelper extends SQLiteOpenHelper {
             ColumnsOrderAfter.QUANTITY + " INTEGER," +
             ColumnsOrderAfter.PRICE + " INTEGER," +
             ColumnsOrderAfter.PRODUCTID + " INTEGER)";
-
 
     public interface ColumnsOrderAfter extends BaseColumns {
         public static final String ORDERID = "orderid";
@@ -68,19 +66,31 @@ public class MyHelper extends SQLiteOpenHelper {
         public static final String PRODUCTID = "productid";
     }
 
+    // ブラックリストテーブル定義
+    public static final String TABLE_NAME_BLACKLIST = "BlackList";
+    private static final String SQL_CREATE_TABLE_BLACKLIST =  "CREATE TABLE " + TABLE_NAME_BLACKLIST + "(" +
+            ColumnsBlacklist.MAILADDRESS + " TEXT," +
+            ColumnsBlacklist.TOTALORDER + " INTEGER)";
+
+    public interface ColumnsBlacklist extends BaseColumns {
+        public static final String MAILADDRESS = "mailaddress";
+        public static final String TOTALORDER = "totalorder";
+    }
+
     public MyHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(SQL_CREATE_TABLE);
+        db.execSQL(SQL_CREATE_TABLE_PRODUCTS);
         db.execSQL(SQL_CREATE_TABLE_ORDER);
         db.execSQL(SQL_CREATE_TABLE_ORDER_AFTER);
+        db.execSQL(SQL_CREATE_TABLE_BLACKLIST);
 
         // 仮の値
         //db.execSQL("insert into Orderlist(MAILADDRESS, PRODUCTNAME, QUANTITY, PRICE, PRODUCTID) values('osamu.com', 'ちくわ', 10, 100, 1);");
-        //db.execSQL("insert into Orderlist(MAILADDRESS, PRODUCTNAME, QUANTITY, PRICE, PRODUCTID) values('osamu.com', 'かまぼこ', 15, 150, 2);");
+        db.execSQL("insert into BlackList(mailaddress, totalOrder) values('failed.com', 1050);");
     }
 
     @Override
