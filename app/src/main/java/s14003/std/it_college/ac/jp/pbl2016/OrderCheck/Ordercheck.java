@@ -1,7 +1,6 @@
 package s14003.std.it_college.ac.jp.pbl2016.OrderCheck;
 
 import android.app.Activity;
-import android.content.ClipData;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -31,13 +30,13 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
     private Database myHelper;
     private Handler mHandler;
+    ProductItem items = new ProductItem();
 
     @Override
     public void onClick(View view) {
 
         String msg = "";
         int priceSum = 0;
-
 
         // 1. SQLiteDatabaseオブジェクトを取得
         SQLiteDatabase db = myHelper.getReadableDatabase();
@@ -56,9 +55,9 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
         // 4. 列のindex(位置)を取得する
         int _idIndex = cursor.getColumnIndex(Database.Columns._ID);
-        int nameIndex = cursor.getColumnIndex(Database.Columns.NAME);
+        int nameIndex = cursor.getColumnIndex(Database.Columns.productname);
         int priceIndex = cursor.getColumnIndex(Database.Columns.PRICE);
-        int quantityIndex = cursor.getColumnIndex(Database.Columns.NUM);
+        int quantityIndex = cursor.getColumnIndex(Database.Columns.quantity);
 
         // 5. 行を読み込む。
         itemList.removeAll(itemList);
@@ -78,7 +77,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
             itemList.add(item);
 
-            msg += item.name + "  　　" + item.num + "個 　　 " + item.price + "円\n";
+            msg += item.name + "  　　" + items.idx + "個 　　 " + item.price * Integer.valueOf(items.idx) + "円\n";
             priceSum += item.price;
 
             // 読込位置を次の行に移動させる
@@ -103,6 +102,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // OKボタンクリック処理
+//                        insertProduct();
                     }
                 }
         );
@@ -120,15 +120,40 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
     }
 
+    //データベースに発注したものを登録
+    private void insertProduct(ProductItem productdata) {
+
+        ProductItem item = new ProductItem();
+
+        SQLiteDatabase db = myHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        for(int i = 0; i< itemDbList.size(); i++) {
+
+            values.put(Database.Columns.productname, productdata.name);
+            values.put(Database.Columns.PRICE, productdata.price);
+            values.put(Database.Columns.quantity, productdata.num);
+
+            // データベースに行を追加する
+            long id = db.insert(Database.TABLE_NAME, null, values);
+            if (id == -1) {
+                Log.d("Database", "行の追加に失敗したよ");
+            }
+        }
+    }
+
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
     }
+
     private class ProductItem {
         int _id;
         String name;
         int price;
         int num;
+        String idx = "1";
     }
 
     private List<ProductItem> itemList;
@@ -153,9 +178,9 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
         // 4. 列のindex(位置)を取得する
         int _idIndex = cursor.getColumnIndex(Database.Columns._ID);
-        int nameIndex = cursor.getColumnIndex(Database.Columns.NAME);
+        int nameIndex = cursor.getColumnIndex(Database.Columns.productname);
         int priceIndex = cursor.getColumnIndex(Database.Columns.PRICE);
-        int quantityIndex = cursor.getColumnIndex(Database.Columns.NUM);
+        int quantityIndex = cursor.getColumnIndex(Database.Columns.quantity);
 
         // 5. 行を読み込む。
         itemList.removeAll(itemList);
@@ -396,6 +421,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     Spinner spinner = (Spinner) adapterView;
                     showToast(Integer.toString(spinner.getSelectedItemPosition()));
+                    items.idx = (String)spinner.getSelectedItem();
                 }
 
                 @Override
@@ -545,9 +571,9 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
             // 列に対応する値をセットする
             ContentValues values = new ContentValues();
-            values.put(Database.Columns.NAME, item.name);
+            values.put(Database.Columns.productname, item.name);
             values.put(Database.Columns.PRICE, item.price);
-            values.put(Database.Columns.NUM, item.num);
+            values.put(Database.Columns.quantity, item.num);
 
             // データベースに行を追加する
             long id = db.insert(Database.TABLE_NAME, null, values);
