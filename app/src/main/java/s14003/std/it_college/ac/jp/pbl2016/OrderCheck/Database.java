@@ -14,17 +14,25 @@ public class Database extends SQLiteOpenHelper {
     private static final String DB_NAME = "product.db";
     private static final int DB_VERSION = 1;
     public static final String TABLE_NAME = "ordered_products";
-    private static final String SQL_CREATE_TABLE =
+
+    private static final String SQL_CREATE_ORDERTABLE =
             "CREATE TABLE " + TABLE_NAME + "(" +
                     Columns._ID + " INTEGER primary key autoincrement," +
-                    Columns.NAME + " TEXT," +
+                    Columns.productname + " TEXT," +
                     Columns.PRICE + " INTEGER," +
-                    Columns.NUM + " INTEGER)";
+                    Columns.quantity + " INTEGER)";
+
+    private static final String SQL_CREATE_ORDERAFTERTABLE =
+            "CREATE TABLE " + TABLE_NAME + "(" +
+                    Columns._ID + " INTEGER primary key autoincrement," +
+                    Columns.productname + " TEXT," +
+                    Columns.PRICE + " INTEGER," +
+                    Columns.quantity + " INTEGER)";
 
     public interface Columns extends BaseColumns {
-        public static final String NAME = "name";
+        public static final String productname = "productname";
+        public static final String quantity = "quantity";
         public static final String PRICE  = "price";
-        public static final String NUM = "num";
     }
 
     public Database(Context context) {
@@ -40,7 +48,8 @@ public class Database extends SQLiteOpenHelper {
 
         Log.d("MyHelper", "onCreate");
 
-        db.execSQL(SQL_CREATE_TABLE);
+        db.execSQL(SQL_CREATE_ORDERTABLE);
+        db.execSQL(SQL_CREATE_ORDERAFTERTABLE);
     }
 
     @Override
