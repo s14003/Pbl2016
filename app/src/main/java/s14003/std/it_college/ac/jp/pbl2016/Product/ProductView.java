@@ -38,7 +38,6 @@ public class ProductView extends AppCompatActivity {
     private List<ProductDbItem> itemDbList;
     private ItemAdapter adapter;
     private List<ProductItem> selectProduct = new ArrayList<>();
-    private final boolean DEBUG = false;
 
     /**
      * ProductItem Class
@@ -116,6 +115,15 @@ public class ProductView extends AppCompatActivity {
             initTable();
             SharedPreferences.Editor editor = spData.edit();
             editor.putBoolean("productsTable", true);
+            editor.apply();
+        }
+
+        // ログイン情報の初期化(デバッグ用)
+        spData = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
+        String mailAddr = spData.getString("Mailsave", "");
+        if (mailAddr.isEmpty()) {
+            SharedPreferences.Editor editor = spData.edit();
+            editor.putString("Mailsave", "failed.com");
             editor.apply();
         }
 
@@ -260,7 +268,7 @@ public class ProductView extends AppCompatActivity {
         // データベースに行を追加する
         long id = db.insert(MyHelper.TABLE_NAME_ORDER, null, values);
         if (id == -1) {
-            Log.v("CHECK_ORDER", "行の追加に失敗したよ");
+            Log.v("CHECK_ORDER", "行の追加に失敗したよ" + mailAddr);
             return false;
         }
         else {
