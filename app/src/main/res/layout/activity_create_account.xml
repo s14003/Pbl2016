@@ -7,14 +7,200 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="s14003.std.it_college.ac.jp.pbl2016.CreateAccountActivity">
+    tools:context=".Account.CreateAccount">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="名前"
+        android:id="@+id/nametext"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:textSize="30sp" />
+
+    <EditText
+        android:layout_width="150sp"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/surname"
+        android:layout_alignTop="@+id/nametext"
+        android:layout_centerHorizontal="true"
+        android:hint="姓" />
+
+    <EditText
+        android:layout_width="150sp"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/editname"
+        android:layout_alignTop="@+id/surname"
+        android:layout_toEndOf="@+id/surname"
+        android:hint="名"
+        android:layout_marginLeft="10sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="※"
+        android:id="@+id/come1"
+        android:textSize="30sp"
+        android:layout_marginLeft="10sp"
+        android:textColor="#FFff0000"
+        android:layout_below="@+id/nametext" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Email"
+        android:id="@+id/EmailText"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="60sp"
+        android:textIsSelectable="false"
+        android:textSize="30sp"
+        android:layout_below="@+id/nametext" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="※"
+        android:id="@+id/come2"
+        android:textSize="30sp"
+        android:layout_marginLeft="10sp"
+        android:textColor="#FFff0000"
+        android:layout_below="@+id/EmailText" />
+
+    <EditText
+        android:layout_width="310sp"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:id="@+id/setEmail"
+        android:layout_alignTop="@+id/EmailText"
+        android:layout_alignStart="@+id/surname"
+        android:hint="Email" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="住所"
+        android:id="@+id/addresstext"
+        android:layout_below="@+id/EmailText"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="60sp"
+        android:textSize="30sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="※"
+        android:id="@+id/come3"
+        android:layout_marginLeft="10sp"
+        android:textSize="30sp"
+        android:textColor="#FFff0000"
+        android:layout_below="@+id/addresstext" />
+
+    <EditText
+        android:layout_width="310sp"
+        android:layout_height="wrap_content"
+        android:id="@+id/setaddress"
+        android:layout_alignTop="@+id/addresstext"
+        android:layout_alignStart="@+id/setEmail"
+        android:hint="address" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="パスワード"
+        android:id="@+id/passwordtext"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/addresstext"
+        android:layout_marginTop="60sp"
+        android:textSize="30sp" />
+
+    <EditText
+        android:layout_width="310sp"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/setpassword"
+        android:layout_alignTop="@+id/passwordtext"
+        android:layout_alignStart="@+id/setaddress"
+        android:hint="password" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="※"
+        android:id="@+id/come4"
+        android:layout_marginLeft="10sp"
+        android:textSize="30sp"
+        android:textColor="#FFff0000"
+        android:layout_below="@+id/passwordtext" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="パスワードの"
+        android:id="@+id/confirmation1"
+        android:layout_below="@+id/passwordtext"
+        android:layout_marginTop="60sp"
+        android:textSize="30sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="確認"
+        android:id="@+id/confirmation2"
+        android:layout_below="@+id/confirmation1"
+        android:layout_alignParentStart="true"
+        android:textSize="30sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="※"
+        android:id="@+id/come5"
+        android:layout_marginLeft="10sp"
+        android:textSize="30sp"
+        android:textColor="#FFff0000"
+        android:layout_below="@+id/confirmation1"
+        android:layout_toEndOf="@+id/confirmation2" />
+
+    <EditText
+        android:layout_width="310sp"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/confpass"
+        android:layout_alignTop="@+id/confirmation1"
+        android:layout_alignStart="@+id/setpassword"
+        android:hint="password" />
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="新規登録画面"
-        android:id="@+id/button"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:textSize="50sp" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="戻る"
+        android:id="@+id/back_button"
+        android:layout_marginTop="60sp"
+        android:layout_below="@+id/confirmation2"
+        android:layout_alignParentStart="true"
+        android:width="150sp"
+        android:height="50sp"
+        android:layout_marginLeft="50sp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="確認"
+        android:id="@+id/confirmation_btn"
+        android:height="50sp"
+        android:width="150sp"
+        android:layout_alignTop="@+id/back_button"
+        android:layout_toEndOf="@+id/surname" />
+
 </RelativeLayout>

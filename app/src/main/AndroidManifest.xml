@@ -14,21 +14,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".Product.ProductView"
-            android:label="商品一覧">
+            android:name=".LoginActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".TestActivity"
-            android:label="テスト" />
-        <activity android:name=".OrderCheckActivity" />
-        <activity android:name=".ChangeAccountInformationActivity" />
-        <activity android:name=".Product.OrderCancelActivity" />
-        <activity android:name=".CreateAccountActivity"></activity>
+        <activity android:name=".Account.CreateAccount" />
+        <activity android:name=".Product.ProductView" />
+        <activity android:name=".OrderCheck.Ordercheck" />
+        <activity android:name=".OrderCancelActivity"/>
+        <activity android:name=".Account.Account_Profile"/>
+        >
+
+        <!-- <activity android:name=".Ordercheck"></activity> -->
+
     </application>
 
 </manifest>

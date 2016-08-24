@@ -1,9 +1,11 @@
 package s14003.std.it_college.ac.jp.pbl2016.Product;
 
 import android.content.Context;
+import android.content.Loader;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 /**
  * Created by s15008 on 16/08/02.
@@ -79,10 +81,15 @@ public class MyHelper extends SQLiteOpenHelper {
 
     public MyHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
+        Log.d("Myhelper", "true");
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+
+        Log.e("MyHelper","onCreate");
+//        db.execSQL(SQL_CREATE_TABLE);
+
         db.execSQL(SQL_CREATE_TABLE_PRODUCTS);
         db.execSQL(SQL_CREATE_TABLE_ORDER);
         db.execSQL(SQL_CREATE_TABLE_ORDER_AFTER);

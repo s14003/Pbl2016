@@ -26,9 +26,12 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import s14003.std.it_college.ac.jp.pbl2016.ChangeAccountInformationActivity;
-import s14003.std.it_college.ac.jp.pbl2016.CreateAccountActivity;
-import s14003.std.it_college.ac.jp.pbl2016.OrderCheckActivity;
+//import s14003.std.it_college.ac.jp.pbl2016.ChangeAccountInformationActivity;
+import s14003.std.it_college.ac.jp.pbl2016.Account.Account_Profile;
+import s14003.std.it_college.ac.jp.pbl2016.LoginActivity;
+import s14003.std.it_college.ac.jp.pbl2016.Product.OrderCancelActivity;
+//import s14003.std.it_college.ac.jp.pbl2016.OrderCheckActivity;
+import s14003.std.it_college.ac.jp.pbl2016.OrderCheck.Ordercheck;
 import s14003.std.it_college.ac.jp.pbl2016.R;
 
 public class ProductView extends AppCompatActivity {
@@ -49,6 +52,11 @@ public class ProductView extends AppCompatActivity {
         public String name;
         public int price;
         public int stock;
+        boolean flag;
+
+        void setCheckFlag(boolean checkFlag) {
+            this.flag = checkFlag;
+        }
     }
 
     /**
@@ -68,7 +76,7 @@ public class ProductView extends AppCompatActivity {
             View view = inflater.inflate(R.layout.product_row, null, false);
             TextView nameView = (TextView)view.findViewById(R.id.name);
             TextView priceView = (TextView)view.findViewById(R.id.price);
-            ProductItem item = getItem(position);
+            final ProductItem item = getItem(position);
             nameView.setText(item.name);
             priceView.setText(String.valueOf(item.price));
 
@@ -79,9 +87,11 @@ public class ProductView extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     if (checkBox.isChecked()) {
+                        item.setCheckFlag(true);
                         selectProduct.add(itemList.get(position));
                         Log.e("select:", selectProduct.get(selectProduct.size() - 1).name + "stock:" + selectProduct.get(selectProduct.size() - 1).stock);
                     } else {
+                        item.setCheckFlag(false);
                         selectProduct.remove(itemList.get(position));
                     }
                 }
@@ -100,8 +110,8 @@ public class ProductView extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_view);
-
         // DBマネージャーを生成
+
         myHelper = new MyHelper(this);
 
         // ハンドラを生成
@@ -128,11 +138,15 @@ public class ProductView extends AppCompatActivity {
         }
 
         // ListViewの処理
-        itemList = new ArrayList<ProductItem>();
+        itemList = new ArrayList<>();
         adapter = new ItemAdapter(getApplicationContext(), 0, itemList);
         adapter.setNotifyOnChange(true);
         ListView listView = (ListView)findViewById(R.id.list_view);
         listView.setAdapter(adapter);
+
+
+        Log.d("productList", "Create");
+
 
         // Table取得したデータをListViewにセットするためのスレッド
         (new Thread(new Runnable() {
@@ -182,7 +196,7 @@ public class ProductView extends AppCompatActivity {
         editor.apply();
 
         // ログイン画面に遷移する
-        startActivity(new Intent(this, CreateAccountActivity.class));
+        startActivity(new Intent(this, LoginActivity.class));
     }
 
     /**
@@ -243,9 +257,11 @@ public class ProductView extends AppCompatActivity {
             }
         }
 
+
         // 注文確認画面へ遷移する
-        Intent intent = new Intent(this, OrderCheckActivity.class);
+        Intent intent = new Intent(this, Ordercheck.class);
         startActivity(intent);
+
     }
 
     /**
@@ -344,7 +360,7 @@ public class ProductView extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu m) {
         Log.d("NOW", "onCreateOptionsMenu");
-        m.add(0, 0, 0, "アカウント情報変更・削除");
+        m.add(0, 0, 0, "アカウント情報変更");
         m.add(0, 10, 1, "商品のキャンセル");
         /*
         m.add(0, 20, 2, "DB更新");
@@ -365,7 +381,7 @@ public class ProductView extends AppCompatActivity {
         switch(mi.getItemId()) {
             case 0:
                 //TODO: アカウント情報変更-削除
-                startActivity(new Intent(this, ChangeAccountInformationActivity.class));
+                startActivity(new Intent(this, Account_Profile.class));
                 return true;
             case 10:
                 //TODO: 商品のキャンセル
