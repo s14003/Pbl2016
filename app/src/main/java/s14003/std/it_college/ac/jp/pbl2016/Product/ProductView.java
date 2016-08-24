@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import s14003.std.it_college.ac.jp.pbl2016.ChangeAccountInformationActivity;
+import s14003.std.it_college.ac.jp.pbl2016.CreateAccountActivity;
 import s14003.std.it_college.ac.jp.pbl2016.OrderCheckActivity;
 import s14003.std.it_college.ac.jp.pbl2016.R;
 
@@ -75,7 +76,6 @@ public class ProductView extends AppCompatActivity {
             final CheckBox checkBox = (CheckBox)view.findViewById(R.id.checkBox);
 
             selectProduct = new ArrayList<ProductItem>();
-            //final ArrayList<Person> finalSelectPerson = selectPerson;
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -127,7 +127,6 @@ public class ProductView extends AppCompatActivity {
         listView.setAdapter(adapter);
 
         // Table取得したデータをListViewにセットするためのスレッド
-        //*
         (new Thread(new Runnable() {
             @Override
             public void run() {
@@ -142,9 +141,6 @@ public class ProductView extends AppCompatActivity {
                 });
             }
         })).start();
-        //*/
-
-        //listView.setOnItemClickListener(this);
 
         // ログアウトボタン
         Button btnLogout = (Button) findViewById(R.id.btn_logout);
@@ -168,11 +164,17 @@ public class ProductView extends AppCompatActivity {
     /**
      * logOut Method
      * ログアウト処理
+     * ログイン情報を削除してログイン画面に遷移する
      */
     public void logOut() {
-        Log.d("LOGOUT", "ProductView.logOut");
-        //TODO: 後でけす
-        if (isSelectProduct()) selectProduct.remove(0);
+        // ログインアドレスを空にする
+        SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = data.edit();
+        editor.putString("Mailsave", "");
+        editor.apply();
+
+        // ログイン画面に遷移する
+        startActivity(new Intent(this, CreateAccountActivity.class));
     }
 
     /**
@@ -188,7 +190,6 @@ public class ProductView extends AppCompatActivity {
             // 選択エラーのダイアログ
             alertDlg.setMessage("商品を選択してください");
             alertDlg.create().show();
-
             return;
         }
 
@@ -200,17 +201,12 @@ public class ProductView extends AppCompatActivity {
                 "OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Log.d("ORDER", "OK clicked");
                         insertOrderListRecord();
                         selectProduct.clear();
                     }
                 });
-        acceptDlg.setNegativeButton(
-                "Cancel",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
+        acceptDlg.setNegativeButton("Cancel", null);
+
         // 表示
         acceptDlg.create().show();
     }
@@ -222,7 +218,6 @@ public class ProductView extends AppCompatActivity {
     private void insertOrderListRecord() {
         // 注文リストをDBに登録
         for (ProductItem item : selectProduct) {
-            Log.d("insertOrderListRecord", String.valueOf(item.id));
 
             boolean isErr = !insertRecord(item);
 
@@ -232,19 +227,15 @@ public class ProductView extends AppCompatActivity {
                 AlertDialog.Builder alertDlg = new AlertDialog.Builder(this);
                 alertDlg.setTitle("注文確認");
                 alertDlg.setMessage("商品を登録出来ませんでした");
-                alertDlg.setPositiveButton(
-                        "OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        });
+                alertDlg.setPositiveButton("OK", null);
+
                 // 表示
                 alertDlg.create().show();
                 return;
             }
         }
 
-        // 注文確認画面へ繊遷移
+        // 注文確認画面へ遷移する
         Intent intent = new Intent(this, OrderCheckActivity.class);
         startActivity(intent);
     }
@@ -254,7 +245,6 @@ public class ProductView extends AppCompatActivity {
      * 注文テーブルにレコードを追加する
      */
     private boolean insertRecord(ProductItem item) {
-        Log.d("insertOrderListRecord", String.valueOf(item.id));
         SQLiteDatabase db = myHelper.getWritableDatabase();
 
         // 列に対応する値をセットする
@@ -287,7 +277,6 @@ public class ProductView extends AppCompatActivity {
      * @return
      */
     private boolean isSelectProduct() {
-        Log.d("CHECK_ORDER", "isSelectProduct()");
         return selectProduct.size() > 0;
     }
 
@@ -349,9 +338,11 @@ public class ProductView extends AppCompatActivity {
         Log.d("NOW", "onCreateOptionsMenu");
         m.add(0, 0, 0, "アカウント情報変更・削除");
         m.add(0, 10, 1, "商品のキャンセル");
+        /*
         m.add(0, 20, 2, "DB更新");
         m.add(0, 30, 3, "メールアドレス登録(failed.com)");
         m.add(0, 40, 4, "メールアドレス登録(coffee.com)");
+        */
         return true;
     }
 
@@ -372,6 +363,7 @@ public class ProductView extends AppCompatActivity {
                 //TODO: 商品のキャンセル
                 startActivity(new Intent(this, OrderCancelActivity.class));
                 return true;
+            /*
             case 20:
                 //TODO: DB更新(後で消す)
                 //スレッドを生成して起動します
@@ -404,6 +396,7 @@ public class ProductView extends AppCompatActivity {
                 editor.putString("Mailsave", "coffee.com");
                 editor.apply();
                 return true;
+            */
 
             default:
                 return false;

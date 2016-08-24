@@ -72,20 +72,14 @@ public class OrderCancelActivity extends AppCompatActivity {
 
             final CheckBox checkBox = (CheckBox)view.findViewById(R.id.checkBox);
 
-            //selectProduct = new ArrayList<OrderItem>();
-            //final ArrayList<Person> finalSelectPerson = selectPerson;
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (checkBox.isChecked()) {
                         selectProduct.add(orderItemList.get(position));
-                        Log.d("cancel", "select:" + selectProduct.get(selectProduct.size() - 1).productName
-                                + " orderId:" + selectProduct.get(selectProduct.size() - 1).orderId
-                                + " quantity:" + selectProduct.get(selectProduct.size() - 1).quantity);
                     } else {
                         selectProduct.remove(orderItemList.get(position));
                     }
-                    Log.d("select", "selectProduct.size():" + String.valueOf(selectProduct.size()));
                 }
             });
 
@@ -112,7 +106,6 @@ public class OrderCancelActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
 
         // Table取得したデータをListViewにセットするためのスレッド
-        //*
         (new Thread(new Runnable() {
             @Override
             public void run() {
@@ -127,11 +120,7 @@ public class OrderCancelActivity extends AppCompatActivity {
                 });
             }
         })).start();
-        //*/
 
-        //listView.setOnItemClickListener(this);
-
-        //*
         // 戻るボタン
         Button btnBack = (Button) findViewById(R.id.btn_back);
         btnBack.setOnClickListener(new View.OnClickListener() {
@@ -140,7 +129,6 @@ public class OrderCancelActivity extends AppCompatActivity {
                 back();
             }
         });
-        //*/
 
         // 注文キャンセルボタン
         Button transition = (Button) findViewById(R.id.btn_order_cancel);
@@ -169,16 +157,15 @@ public class OrderCancelActivity extends AppCompatActivity {
      * @return
      */
     private boolean isSelectProduct() {
-        Log.d("CHECK_ORDER", "isSelectProduct()");
         return selectProduct.size() > 0;
     }
-
 
     private void back() {
         selectProduct.clear();
         startActivity(new Intent(this, ProductView.class));
+
         //TODO: 後でけす
-        //*
+        /*
         SQLiteDatabase db = this.myHelper.getReadableDatabase();
         Cursor cursor = db.query(MyHelper.TABLE_NAME_BLACKLIST, new String[] {MyHelper.ColumnsBlacklist.TOTALORDER, MyHelper.ColumnsBlacklist.MAILADDRESS},
                 MyHelper.ColumnsBlacklist.MAILADDRESS + " = \"failed.com\"", null, null, null, null);
@@ -213,20 +200,13 @@ public class OrderCancelActivity extends AppCompatActivity {
                         createCancelDialog(updateTable());
                     }
                 });
-        listDlg.setNegativeButton(
-                "Cancel",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Cancel ボタンクリック処理
-                    }
-                });
+        listDlg.setNegativeButton("Cancel", null);
         // 表示
         listDlg.create().show();
     }
 
     private void createCancelDialog(boolean isSuccessful) {
-        //TODO: キャンセル完成ダイアログ
-        //TODO: キャンセル完成失敗ダイアログ
+        // キャンセル確認ダイアログ
         AlertDialog.Builder dlg = new AlertDialog.Builder(this);
         dlg.setTitle("商品のキャンセル");
         if (isSuccessful) {
@@ -317,7 +297,6 @@ public class OrderCancelActivity extends AppCompatActivity {
      * @param item
      */
     private void updateBlackListTable(SQLiteDatabase dbWrite, OrderItem item) throws Exception {
-        boolean successful = false;
         // メールアドレス、注文合計額を指定
         String[] cols = {
                 MyHelper.ColumnsBlacklist.MAILADDRESS,
@@ -404,7 +383,6 @@ public class OrderCancelActivity extends AppCompatActivity {
         String selection = MyHelper.ColumnsOrderAfter.MAILADDRESS + " = ?";
         SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
         String mailAddr = data.getString("Mailsave", "");
-        Log.d("NOW:OrderCancel", mailAddr);
         String[] selectionArgs = {mailAddr};
         Cursor cursor = db.query(MyHelper.TABLE_NAME_ORDER_AFTER, cols, selection, selectionArgs, null, null,
                 MyHelper.ColumnsOrder.ORDERID + " ASC");
