@@ -49,6 +49,7 @@ import s14003.std.it_college.ac.jp.pbl2016.Account.Member_database;
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+    private Member_database menber;
     /**
      * Id to identity READ_CONTACTS permission request.
      */
@@ -77,9 +78,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        /*Intent intent = new Intent(this, ProductView.class);
-        startActivity(intent);
-*/
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -120,9 +118,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
 
-    /*
-    * CreateAccountに遷移
-    * */
+//     CreateAccountに遷移
+
 
     private void createAccount() {
         Intent it = new Intent(LoginActivity.this, CreateAccount.class);
@@ -184,11 +181,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         /*SharedPreferences mailaddress = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
         String mail = String.valueOf(mailaddress);*/
 
-        String mail = "foo@example.com";
+        String mail_dummy = "foo@example.com";
+        String password_dummy = "fooexample";
+
         if (mAuthTask != null) {
             return;
         }
 
+        /*SQLiteDatabase db = menber.getReadableDatabase();
+        String sql = "SELECT" + Member_database.Columns.password +" * FROM " +
+                Member_database.TABLE_NAME +  " WHERE " + Member_database.Columns.MailAdddres;
+        Cursor cursor = db.rawQuery(sql, new String[] { mail });
+*/
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
@@ -208,25 +212,33 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
 
         // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
+        if (TextUtils.isEmpty(mail_dummy)) {
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
+        } else if (!isEmailValid(mail_dummy)) {
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
         }
 
-        if (email.equals(mail)) {
+        if (email.equals(mail_dummy)) {
             focusView = mEmailView;
-            cancel = false;
+            if (password.equals(password_dummy)) {
+                focusView = mPasswordView;
+                cancel = false;
+            } else {
+                mPasswordView.setError(getString(R.string.error_matched_password));
+                focusView = mPasswordView;
+                cancel = true;
+            }
             //password check this
         } else {
             focusView = mEmailView;
             mEmailView.setError(getString(R.string.error_email_not_macthed));
             cancel = true;
         }
+
 
         if (cancel) {
             // There was an error; don't attempt login and focus the first
