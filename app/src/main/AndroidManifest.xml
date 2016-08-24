@@ -22,6 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".Account.CreateAccount" />
         <activity android:name=".Product.ProductView" />
         <activity android:name=".OrderCheck.Ordercheck" />
@@ -30,7 +31,6 @@
         >
 
         <!-- <activity android:name=".Ordercheck"></activity> -->
-
     </application>
 
 </manifest>
