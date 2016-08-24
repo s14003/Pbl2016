@@ -13,10 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import java.util.List;
 
 import s14003.std.it_college.ac.jp.pbl2016.R;
 
@@ -46,12 +43,20 @@ public class Account_Profile extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String error = insertcheck();
-                String item_msg = changecheck();
+//                String item_msg = changecheck();
                 Log.d("data", error);
-                if(error.equals("")){
+                if(error.equals("")) {
+                    Profdata send_data = getconf_ET();
+                    if(updateAccount(send_data)){
+                        Toast.makeText(Account_Profile.this, "更新に成功しました。", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                    else{
+                        Toast.makeText(Account_Profile.this, "更新に失敗しました。", Toast.LENGTH_SHORT).show();
+                    }
                     //登録処理
-                    alert.setTitle("確認");
-                    alert.setMessage("以下を変更します。よろしいですか？\n" + item_msg);
+                    /*alert.setTitle("確認");
+                    //alert.setMessage("以下を変更します。よろしいですか？\n" + item_msg);
                     alert.setPositiveButton("OK",
                             new DialogInterface.OnClickListener(){
                                 @Override
@@ -74,8 +79,8 @@ public class Account_Profile extends AppCompatActivity {
                                 }
                             });
                     alert.create().show();
-                }
-                else{
+                }*/
+                }else{
                     Toast.makeText(Account_Profile.this, error, Toast.LENGTH_SHORT).show();
                 }
 
@@ -108,7 +113,7 @@ public class Account_Profile extends AppCompatActivity {
     }
 
     //変更された項目をcheckする
-    private String changecheck(){
+    /*private String changecheck(){
         String change_msg = "";
         Profdata olddata = new Profdata();
         olddata = serchDBdata(olddata);
@@ -126,7 +131,7 @@ public class Account_Profile extends AppCompatActivity {
             change_msg += "パスワード\n";
         }
         return change_msg;
-    }
+    }*/
     //DBから取得したデータをEditTextに入れる
     private void set_Profdata(){
         Profdata data = new Profdata();
@@ -161,9 +166,9 @@ public class Account_Profile extends AppCompatActivity {
             data.firstname = cursor.getString(1);
             data.prof_address = cursor.getString(2);
             data.prof_password = cursor.getString(3);
+
         }
         Log.d("test", data.lastname + data.firstname + data.prof_address + data.prof_password);
-
 
         return data;
     }
@@ -222,7 +227,6 @@ public class Account_Profile extends AppCompatActivity {
         //String conf_pass;
 
     }
-
     //シェアされているEmailを取ってくる
     private String getEmailshare(){
         SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
