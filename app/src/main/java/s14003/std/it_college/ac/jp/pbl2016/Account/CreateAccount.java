@@ -159,7 +159,6 @@ public class CreateAccount extends AppCompatActivity {
             }
         });
     }
-
     private class DataStr {
         String surname;
         String editname;
