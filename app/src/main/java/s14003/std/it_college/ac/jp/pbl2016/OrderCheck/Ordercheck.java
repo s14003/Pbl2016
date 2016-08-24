@@ -23,11 +23,12 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import s14003.std.it_college.ac.jp.pbl2016.Product.MyHelper;
 import s14003.std.it_college.ac.jp.pbl2016.R;
 
 public class Ordercheck extends Activity implements AdapterView.OnItemClickListener, View.OnClickListener {
 
-    private Database myHelper;
+    private MyHelper myHelper;
     private Handler mHandler;
 
     @Override
@@ -42,8 +43,8 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
         // 2. query()を呼び、検索を行う
         Cursor cursor =
-                db.query(Database.TABLE_NAME, null, null, null, null, null,
-                        Database.Columns._ID + " ASC");
+                db.query(MyHelper.TABLE_NAME, null, null, null, null, null,
+                        MyHelper.ColumnsOrder.PRODUCTID + " ASC");
 
         // 3. 読込位置を先頭にする。falseの場合は結果0件
         if(!cursor.moveToFirst()){
@@ -140,8 +141,8 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
         // 2. query()を呼び、検索を行う
         Cursor cursor =
-                db.query(Database.TABLE_NAME, null, null, null, null, null,
-                        Database.Columns._ID + " ASC");
+                db.query(MyHelper.TABLE_NAME, null, null, null, null, null,
+                        MyHelper.ColumnsOrder.PRODUCTID + " ASC");
 
         // 3. 読込位置を先頭にする。falseの場合は結果0件
         if(!cursor.moveToFirst()){
@@ -191,11 +192,11 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ordercheck);
 
-        myHelper = new Database(this);
+        myHelper = new MyHelper(this);
 
         mHandler = new Handler();
 
-//        initTable();
+        initTable();
 
 
         itemList = new ArrayList<ProductItem>();
@@ -242,112 +243,112 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
     private void setProductData(){
 
-//        ProductItem item = new ProductItem();
-//        item.name = "赤鉛筆";
-//        item.price = 500;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "青鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "黄鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "緑鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "紫鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "茶色鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "青鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "黄鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "緑鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "紫鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "茶色鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "青鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "黄鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "緑鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "紫鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "茶色鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "青鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "黄鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "緑鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "紫鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "茶色鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//
+        ProductItem item = new ProductItem();
+        item.name = "赤鉛筆";
+        item.price = 500;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "青鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "黄鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "緑鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "紫鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "茶色鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "青鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "黄鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "緑鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "紫鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "茶色鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "青鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "黄鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "緑鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "紫鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "茶色鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "青鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "黄鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "緑鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "紫鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+        item = new ProductItem();
+        item.name = "茶色鉛筆";
+        item.price = 200;
+        item.num = 1;
+        itemList.add(item);
+
 //        adapter.notifyDataSetChanged();
 
         selectProductList();

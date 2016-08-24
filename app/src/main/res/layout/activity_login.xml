@@ -77,7 +77,7 @@
                     android:textStyle="bold" />
                 <Button
                     android:id="@+id/btnCreateAccount"
-                    android:layout_width="match_parent"
+                    android:layout_width="274dp"
                     android:layout_height="wrap_content"
                     android:text="@string/create_account"/>
 

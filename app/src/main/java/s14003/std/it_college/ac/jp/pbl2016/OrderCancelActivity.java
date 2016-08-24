@@ -92,7 +92,7 @@ public class OrderCancelActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_order_cancel);
+//        setContentView(R.layout.activity_order_cancel);
 
         // DBマネージャーを生成
         myHelper = new MyHelper(this);
