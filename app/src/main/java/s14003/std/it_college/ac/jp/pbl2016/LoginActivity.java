@@ -64,7 +64,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Intent intent = new Intent(this, ProductView.class);
+        Intent intent = new Intent(this, TestActivity.class);
         startActivity(intent);
 
         super.onCreate(savedInstanceState);
