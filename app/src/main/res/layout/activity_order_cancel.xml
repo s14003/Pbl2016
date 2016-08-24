@@ -2,7 +2,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".Product.ProductView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -10,12 +9,13 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".Product.OrderCancelActivity"
     android:weightSum="1">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="商品名"
+        android:text="商品のキャンセル"
         android:id="@+id/textView2"
         android:layout_gravity="center_horizontal"
         android:textSize="35sp"
@@ -41,8 +41,8 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ログアウト"
-            android:id="@+id/btn_logout"
+            android:text="戻る"
+            android:id="@+id/btn_back"
             android:textSize="30sp"
             android:layout_marginRight="30dp"
             android:background="@drawable/button_bg_stroke" />
@@ -50,8 +50,8 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="購入確認画面へ"
-            android:id="@+id/btn_check_order"
+            android:text="注文キャンセル"
+            android:id="@+id/btn_order_cancel"
             android:textSize="30sp"
             android:layout_marginLeft="30dp"
             android:background="@drawable/button_bg_stroke" />
