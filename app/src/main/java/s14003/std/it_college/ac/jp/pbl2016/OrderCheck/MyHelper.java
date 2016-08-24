@@ -6,9 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-/**
- * Created by samuel on 16/08/04.
- */
+
 public class MyHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "product.db";
     private static final int DB_VERSION = 1;
