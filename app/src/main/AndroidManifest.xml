@@ -25,8 +25,8 @@
 
         <activity android:name=".Account.CreateAccount" />
         <activity android:name=".Product.ProductView" />
+        <activity android:name=".Product.OrderCancelActivity" />
         <activity android:name=".OrderCheck.Ordercheck" />
-        <activity android:name=".OrderCancelActivity"/>
         <activity android:name=".Account.Account_Profile"/>
         >
 

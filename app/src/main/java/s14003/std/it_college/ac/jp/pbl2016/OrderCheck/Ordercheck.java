@@ -42,8 +42,9 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
         // 2. query()を呼び、検索を行う
         Cursor cursor =
-                db.query(MyHelper.TABLE_NAME_ORDER, null, null, null, null, null,
-                        MyHelper.ColumnsOrder.ORDERID + " ASC");
+
+                db.query(MyHelper.TABLE_NAME_PRODUCTS , null, null, null, null, null,
+                        MyHelper.ColumnsOrder.PRODUCTID + " ASC");
 
         // 3. 読込位置を先頭にする。falseの場合は結果0件
         if(!cursor.moveToFirst()){
@@ -168,8 +169,8 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
         // 2. query()を呼び、検索を行う
         Cursor cursor =
-                db.query(MyHelper.TABLE_NAME_ORDER, null, null, null, null, null,
-                        MyHelper.ColumnsOrder.ORDERID + " ASC");
+                db.query(MyHelper.TABLE_NAME_PRODUCTS, null, null, null, null, null,
+                        MyHelper.ColumnsOrder.PRODUCTID + " ASC");
 
         // 3. 読込位置を先頭にする。falseの場合は結果0件
         if(!cursor.moveToFirst()){
@@ -215,6 +216,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
     }
 
     private Spinner productSpinner;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -91,7 +91,6 @@ public class MyHelper extends SQLiteOpenHelper {
 //        db.execSQL(SQL_CREATE_TABLE);
 
         db.execSQL(SQL_CREATE_TABLE_PRODUCTS);
-
         db.execSQL(SQL_CREATE_TABLE_ORDER);
         db.execSQL(SQL_CREATE_TABLE_ORDER_AFTER);
         db.execSQL(SQL_CREATE_TABLE_BLACKLIST);
