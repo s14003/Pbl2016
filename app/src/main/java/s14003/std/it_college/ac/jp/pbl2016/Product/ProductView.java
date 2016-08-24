@@ -29,7 +29,7 @@ import java.util.List;
 //import s14003.std.it_college.ac.jp.pbl2016.ChangeAccountInformationActivity;
 import s14003.std.it_college.ac.jp.pbl2016.Account.Account_Profile;
 import s14003.std.it_college.ac.jp.pbl2016.LoginActivity;
-import s14003.std.it_college.ac.jp.pbl2016.OrderCancelActivity;
+import s14003.std.it_college.ac.jp.pbl2016.Product.OrderCancelActivity;
 //import s14003.std.it_college.ac.jp.pbl2016.OrderCheckActivity;
 import s14003.std.it_college.ac.jp.pbl2016.OrderCheck.Ordercheck;
 import s14003.std.it_college.ac.jp.pbl2016.R;
@@ -58,8 +58,6 @@ public class ProductView extends AppCompatActivity {
             this.flag = checkFlag;
         }
     }
-
-
 
     /**
      * ItemAdapter Class
