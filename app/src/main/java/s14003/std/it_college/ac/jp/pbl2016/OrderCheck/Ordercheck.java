@@ -28,7 +28,7 @@ import s14003.std.it_college.ac.jp.pbl2016.R;
 
 public class Ordercheck extends Activity implements AdapterView.OnItemClickListener, View.OnClickListener {
 
-    private Database myHelper;
+    private MyHelper myHelper;
     private Handler mHandler;
 
     @Override
@@ -42,8 +42,8 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
         // 2. query()を呼び、検索を行う
         Cursor cursor =
-                db.query(Database.TABLE_NAME, null, null, null, null, null,
-                        Database.Columns._ID + " ASC");
+                db.query(MyHelper.TABLE_NAME_ORDER, null, null, null, null, null,
+                        MyHelper.ColumnsOrder.ORDERID + " ASC");
 
         // 3. 読込位置を先頭にする。falseの場合は結果0件
         if(!cursor.moveToFirst()){
@@ -53,10 +53,10 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
         }
 
         // 4. 列のindex(位置)を取得する
-        int _idIndex = cursor.getColumnIndex(Database.Columns._ID);
-        int nameIndex = cursor.getColumnIndex(Database.Columns.productname);
-        int priceIndex = cursor.getColumnIndex(Database.Columns.PRICE);
-        int quantityIndex = cursor.getColumnIndex(Database.Columns.quantity);
+        int _idIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.ORDERID);
+        int nameIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.PRODUCTNAME);
+        int priceIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.PRICE);
+        int quantityIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.QUANTITY);
 
         // 5. 行を読み込む
         msg += "これらの商品を購入してもよろしいですか？\n\n";
@@ -128,14 +128,14 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
         for(int i = 0; i< itemList.size(); i++) {
 
-            values.put(Database.Columns.af_productname, item.name);
-            values.put(Database.Columns.af_price, item.price * itemList.get(item._id -1).idx);
-            values.put(Database.Columns.af_quantity, itemList.get(item._id - 1).idx);
+            values.put(MyHelper.ColumnsOrderAfter.PRODUCTNAME, item.name);
+            values.put(MyHelper.ColumnsOrderAfter.PRICE, item.price * itemList.get(item._id -1).idx);
+            values.put(MyHelper.ColumnsOrderAfter.QUANTITY, itemList.get(item._id - 1).idx);
 
             // データベースに行を追加する
-            long id = db.insert(Database.TABLE_NAME, null, values);
+            long id = db.insert(MyHelper.TABLE_NAME_ORDER_AFTER, null, values);
             if (id == -1) {
-                Log.d("Database", "行の追加に失敗したよ");
+                Log.d("Database", "Insert Failed");
             }
         }
         db.close();
@@ -164,8 +164,8 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
         // 2. query()を呼び、検索を行う
         Cursor cursor =
-                db.query(Database.TABLE_NAME, null, null, null, null, null,
-                        Database.Columns._ID + " ASC");
+                db.query(MyHelper.TABLE_NAME_ORDER, null, null, null, null, null,
+                        MyHelper.ColumnsOrder.ORDERID + " ASC");
 
         // 3. 読込位置を先頭にする。falseの場合は結果0件
         if(!cursor.moveToFirst()){
@@ -175,10 +175,10 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
         }
 
         // 4. 列のindex(位置)を取得する
-        int _idIndex = cursor.getColumnIndex(Database.Columns._ID);
-        int nameIndex = cursor.getColumnIndex(Database.Columns.productname);
-        int priceIndex = cursor.getColumnIndex(Database.Columns.PRICE);
-        int quantityIndex = cursor.getColumnIndex(Database.Columns.quantity);
+        int _idIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.ORDERID);
+        int nameIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.PRODUCTNAME);
+        int priceIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.PRICE);
+        int quantityIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.QUANTITY);
 
         // 5. 行を読み込む。
         itemList.removeAll(itemList);
@@ -216,7 +216,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ordercheck);
 
-        myHelper = new Database(this);
+        myHelper = new MyHelper(this);
 
         mHandler = new Handler();
 
@@ -461,7 +461,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
     private List<ProductDbItem> itemDbList;
 
     private void setProductDbData(){
-//
+
 //        itemDbList = new ArrayList<ProductDbItem>();
 //
 //        ProductDbItem item = new ProductDbItem();
@@ -569,7 +569,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
         SQLiteDatabase db = myHelper.getWritableDatabase();
 
         // 一旦削除
-        int count = db.delete(Database.TABLE_NAME, null, null);
+        int count = db.delete(MyHelper.TABLE_NAME_ORDER, null, null);
         Log.d("initTable", "count =" + count);
 
         setProductDbData();
@@ -579,12 +579,12 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
             // 列に対応する値をセットする
             ContentValues values = new ContentValues();
-            values.put(Database.Columns.productname, item.name);
-            values.put(Database.Columns.PRICE, item.price);
-            values.put(Database.Columns.quantity, item.num);
+            values.put(MyHelper.ColumnsOrder.PRODUCTNAME, item.name);
+            values.put(MyHelper.ColumnsOrder.PRICE, item.price);
+            values.put(MyHelper.ColumnsOrder.QUANTITY, item.num);
 
             // データベースに行を追加する
-            long id = db.insert(Database.TABLE_NAME, null, values);
+            long id = db.insert(MyHelper.TABLE_NAME_ORDER, null, values);
             if(id == -1){
                 Log.d("Database", "行の追加に失敗したよ");
             }
