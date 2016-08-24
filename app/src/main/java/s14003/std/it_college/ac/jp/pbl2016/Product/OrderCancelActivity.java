@@ -137,7 +137,6 @@ public class OrderCancelActivity extends AppCompatActivity {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("OrderCancelActivity", "btnBack.back");
                 back();
             }
         });
@@ -148,10 +147,32 @@ public class OrderCancelActivity extends AppCompatActivity {
         transition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setOrderCancelDialog();
+                if (isSelectProduct()) {
+                    setOrderCancelDialog();
+                }
+                else {
+                    createFailedDialog();
+                }
             }
         });
     }
+
+    private void createFailedDialog() {
+        AlertDialog.Builder failedDlg = new AlertDialog.Builder(this);
+        failedDlg.setMessage("商品を選択してください");
+        failedDlg.create().show();
+    }
+
+    /**
+     * isSelectProduct Method
+     * 注文リストに１個以上登録されているか確認する
+     * @return
+     */
+    private boolean isSelectProduct() {
+        Log.d("CHECK_ORDER", "isSelectProduct()");
+        return selectProduct.size() > 0;
+    }
+
 
     private void back() {
         selectProduct.clear();
@@ -189,7 +210,7 @@ public class OrderCancelActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // OK ボタンクリック処理
-                        updateTable();
+                        createCancelDialog(updateTable());
                     }
                 });
         listDlg.setNegativeButton(
@@ -203,9 +224,28 @@ public class OrderCancelActivity extends AppCompatActivity {
         listDlg.create().show();
     }
 
-    private void updateTable() {
+    private void createCancelDialog(boolean isSuccessful) {
+        //TODO: キャンセル完成ダイアログ
+        //TODO: キャンセル完成失敗ダイアログ
+        AlertDialog.Builder dlg = new AlertDialog.Builder(this);
+        dlg.setTitle("商品のキャンセル");
+        if (isSuccessful) {
+            dlg.setMessage("キャンセルが完了しました");
+            selectProduct.clear();
+            startActivity(new Intent(this, ProductView.class));
+        }
+        else {
+            dlg.setMessage("キャンセル出来ませんでした");
+        }
+        // 表示
+        dlg.create().show();
+
+    }
+
+    private boolean updateTable() {
         // 以下をトライザクション処理で行う
         // 一つでもエラーがあると全てロールバックする
+        boolean isSuccessful = false;
         SQLiteDatabase dbWrite = myHelper.getWritableDatabase();
         dbWrite.beginTransaction();
         try {
@@ -215,6 +255,7 @@ public class OrderCancelActivity extends AppCompatActivity {
                 updateOrderAfterListTable(dbWrite, item);
             }
             dbWrite.setTransactionSuccessful();
+            isSuccessful = true;
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -223,16 +264,18 @@ public class OrderCancelActivity extends AppCompatActivity {
             dbWrite.endTransaction();
         }
         selectProduct.clear();
-        updateSelectProductList();
+        if (isSuccessful) updateSelectProductList();
+
+        return isSuccessful;
     }
 
     /**
      * updateProductListTable Method
      * 商品テーブルの在庫数を更新する
+     * 商品テーブルの在庫数に注文テーブルの数量を加算する
      * @param item
      */
     private void updateProductListTable(SQLiteDatabase dbWrite, OrderItem item) throws Exception {
-        //TODO: 商品テーブルの在庫数に注文テーブルの数量を加算する
         // 商品名、数量を指定
         String[] cols = {
                 MyHelper.ColumnsProducts.NAME,
@@ -245,8 +288,7 @@ public class OrderCancelActivity extends AppCompatActivity {
         // 読み込み位置を先頭にする、falseの場合は結果０件
         if (!cursor.moveToFirst()) {
             cursor.close();
-            //dbRead.close();
-            return;
+            throw new Exception();
         }
 
         // 現在の商品テーブルのストックに注文テーブルの数量を加算した値を求める
@@ -263,22 +305,19 @@ public class OrderCancelActivity extends AppCompatActivity {
         // 加算した値をテーブルに反映させる
         long id = dbWrite.update(MyHelper.TABLE_NAME_PRODUCTS, values, selection, selectionArgs);
         if (id == -1) {
-            Log.v("CHECK_ORDER", "行の追加に失敗したよ");
-        }
-        else {
-            Log.v("CHECK_ORDER", "行の追加に成功したよ");
+            Log.v("NOW", "行の追加に失敗したよ");
+            throw new Exception();
         }
     }
 
     /**
-     * updateBlacckListTable Method
+     * updateBlackListTable Method
      * ブラックリストテーブルの注文合計額を更新をする
+     * ブラックリストテーブルの注文合計額から(発注.数量 * 発注.数量)を減算する
      * @param item
-     * @return
      */
-    private boolean updateBlackListTable(SQLiteDatabase dbWrite, OrderItem item) throws Exception {
+    private void updateBlackListTable(SQLiteDatabase dbWrite, OrderItem item) throws Exception {
         boolean successful = false;
-        //TODO: ブラックリストテーブルの注文合計額から(発注.数量 * 発注.数量)を減算する
         // メールアドレス、注文合計額を指定
         String[] cols = {
                 MyHelper.ColumnsBlacklist.MAILADDRESS,
@@ -294,14 +333,12 @@ public class OrderCancelActivity extends AppCompatActivity {
         // 3. 読み込み位置を先頭にする、falseの場合は結果０件
         if (!cursor.moveToFirst()) {
             cursor.close();
-            //dbRead.close();
-            return false;
+            throw new Exception();
         }
 
         // ブラックリストテーブルの注文合計額から(発注.数量 * 発注.数量)を減算した値を求める
         int totalorderIndex = cursor.getColumnIndex(MyHelper.ColumnsBlacklist.TOTALORDER);
         int updateTotalOrder = cursor.getInt(totalorderIndex) - (item.price * item.quantity);
-        Log.d("updateProductListTable", String.valueOf(updateTotalOrder));
 
         // 6. Cursorを閉じる
         cursor.close();
@@ -314,29 +351,22 @@ public class OrderCancelActivity extends AppCompatActivity {
         long id = dbWrite.update(MyHelper.TABLE_NAME_BLACKLIST, values, selection, selectionArgs);
         if (id == -1) {
             Log.v("CHECK_ORDER", "行の追加に失敗したよ");
+            throw new Exception();
         }
-        else {
-            Log.v("CHECK_ORDER", "行の追加に成功したよ");
-        }
-
-        return successful;
     }
 
     /**
      * updateOrderAfterListTable Method
-     * DBからチェックリストのレコードを削除
+     * 注文テーブルからチェックリストのレコードを削除する
      */
     private void updateOrderAfterListTable(SQLiteDatabase dbWrite, OrderItem item) throws Exception {
-        //TODO: 注文テーブルからチェックリストのレコードを削除する
         // データベースから発注IDが同じレコードを削除する
         String whereClause = MyHelper.ColumnsOrderAfter.ORDERID + " = ?";
         String whereArgs[] = {String.valueOf(item.orderId)};
         long id = dbWrite.delete(MyHelper.TABLE_NAME_ORDER_AFTER, whereClause, whereArgs);
         if (id == -1) {
             Log.d("CHECK_ORDER", "レコードの削除に失敗したよ");
-        }
-        else {
-            Log.d("CHECK_ORDER", "レコードの削除に成功したよ");
+            throw new Exception();
         }
     }
 
@@ -373,7 +403,8 @@ public class OrderCancelActivity extends AppCompatActivity {
         // 発注者のメールアドレスとログインアドレスが同じレコードのみを指定
         String selection = MyHelper.ColumnsOrderAfter.MAILADDRESS + " = ?";
         SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
-        String mailAddr = data.getString("Mailsave", "failed.com");
+        String mailAddr = data.getString("Mailsave", "");
+        Log.d("NOW:OrderCancel", mailAddr);
         String[] selectionArgs = {mailAddr};
         Cursor cursor = db.query(MyHelper.TABLE_NAME_ORDER_AFTER, cols, selection, selectionArgs, null, null,
                 MyHelper.ColumnsOrder.ORDERID + " ASC");

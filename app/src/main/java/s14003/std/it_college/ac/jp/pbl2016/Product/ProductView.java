@@ -34,8 +34,10 @@ public class ProductView extends AppCompatActivity {
     private MyHelper myHelper;
     private Handler mHandler;
     private List<ProductItem> itemList;
+    private List<ProductDbItem> itemDbList;
     private ItemAdapter adapter;
     private List<ProductItem> selectProduct = new ArrayList<>();
+    private final boolean DEBUG = false;
 
     /**
      * ProductItem Class
@@ -79,25 +81,12 @@ public class ProductView extends AppCompatActivity {
                 public void onClick(View v) {
                     if (checkBox.isChecked()) {
                         selectProduct.add(itemList.get(position));
-                        Log.e("select:", selectProduct.get(selectProduct.size() - 1).name);
+                        Log.e("select:", selectProduct.get(selectProduct.size() - 1).name + "stock:" + selectProduct.get(selectProduct.size() - 1).stock);
                     } else {
                         selectProduct.remove(itemList.get(position));
                     }
                 }
             });
-
-            /*
-            Button btnOK = (Button)findViewById(R.id.btn_check_order);
-            btnOK.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    for (ProductItem productItem : selectProduct) {
-                        Log.e("ProductName :", productItem.name);
-                        Log.e("ProductPrice :", String.valueOf(productItem.price));
-                    }
-                }
-            });
-            //*/
 
             return  view;
         }
@@ -119,6 +108,17 @@ public class ProductView extends AppCompatActivity {
         // ハンドラを生成
         mHandler = new Handler();
 
+        // 商品テーブルの初期化(初回のみの実行)
+        SharedPreferences spData = getSharedPreferences("initTable", Context.MODE_PRIVATE);
+        boolean isInitProductsTable = spData.getBoolean("productsTable", false);
+        if (!isInitProductsTable) {
+            setProductDbData();
+            initTable();
+            SharedPreferences.Editor editor = spData.edit();
+            editor.putBoolean("productsTable", true);
+            editor.apply();
+        }
+
         // ListViewの処理
         itemList = new ArrayList<ProductItem>();
         adapter = new ItemAdapter(getApplicationContext(), 0, itemList);
@@ -131,7 +131,6 @@ public class ProductView extends AppCompatActivity {
         (new Thread(new Runnable() {
             @Override
             public void run() {
-                initTable();
                 selectProductList();
 
                 //メインスレッドのメッセージキューにメッセージを登録します。
@@ -187,13 +186,7 @@ public class ProductView extends AppCompatActivity {
 
         if (!isSelectProduct()) {
             // 選択エラーのダイアログ
-            alertDlg.setMessage("商品を選択してくださいね");
-            alertDlg.setPositiveButton(
-                    "OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    });
+            alertDlg.setMessage("商品を選択してください");
             alertDlg.create().show();
 
             return;
@@ -209,6 +202,7 @@ public class ProductView extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         Log.d("ORDER", "OK clicked");
                         insertOrderListRecord();
+                        selectProduct.clear();
                     }
                 });
         acceptDlg.setNegativeButton(
@@ -266,7 +260,7 @@ public class ProductView extends AppCompatActivity {
         // 列に対応する値をセットする
         // アカウントメールアドレスを取得する
         SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
-        String mailAddr = "failed.com";//data.getString("Mailsave", "failed.com");
+        String mailAddr = data.getString("Mailsave", "failed.com");
         ContentValues values = new ContentValues();
         values.put(MyHelper.ColumnsOrder.MAILADDRESS, mailAddr);
         values.put(MyHelper.ColumnsOrder.PRODUCTNAME, item.name);
@@ -356,7 +350,8 @@ public class ProductView extends AppCompatActivity {
         m.add(0, 0, 0, "アカウント情報変更・削除");
         m.add(0, 10, 1, "商品のキャンセル");
         m.add(0, 20, 2, "DB更新");
-        m.add(0, 30, 3, "メールアドレス登録");
+        m.add(0, 30, 3, "メールアドレス登録(failed.com)");
+        m.add(0, 40, 4, "メールアドレス登録(coffee.com)");
         return true;
     }
 
@@ -383,7 +378,6 @@ public class ProductView extends AppCompatActivity {
                 (new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        initTable();
                         selectProductList();
 
                         //メインスレッドのメッセージキューにメッセージを登録します。
@@ -403,6 +397,14 @@ public class ProductView extends AppCompatActivity {
                 editor.putString("Mailsave", "failed.com");
                 editor.apply();
                 return true;
+            case 40:
+                //TODO: 後でけす
+                data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
+                editor = data.edit();
+                editor.putString("Mailsave", "coffee.com");
+                editor.apply();
+                return true;
+
             default:
                 return false;
         }
@@ -417,8 +419,6 @@ public class ProductView extends AppCompatActivity {
 
         // 一旦を削除
         int count = db.delete(MyHelper.TABLE_NAME_PRODUCTS, null, null);
-
-        setProductDbData();
 
         for (int i = 0; i < itemDbList.size(); i++) {
             ProductDbItem item = itemDbList.get(i);
@@ -453,7 +453,6 @@ public class ProductView extends AppCompatActivity {
      * setProductDbData Method
      * 商品リストの仮のデータをセットする
      */
-    private List<ProductDbItem> itemDbList;
     public void setProductDbData() {
         itemDbList = new ArrayList<ProductDbItem>();
 

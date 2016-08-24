@@ -91,6 +91,7 @@ public class MyHelper extends SQLiteOpenHelper {
         // 仮の値
         //db.execSQL("insert into Orderlist(MAILADDRESS, PRODUCTNAME, QUANTITY, PRICE, PRODUCTID) values('osamu.com', 'ちくわ', 10, 100, 1);");
         db.execSQL("insert into BlackList(mailaddress, totalOrder) values('failed.com', 1050);");
+        db.execSQL("insert into BlackList(mailaddress, totalOrder) values('coffee.com', 1050);");
     }
 
     @Override
