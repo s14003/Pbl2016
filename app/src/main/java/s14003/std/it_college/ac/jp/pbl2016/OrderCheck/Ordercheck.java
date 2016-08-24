@@ -129,13 +129,17 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
         for(int i = 0; i< itemList.size(); i++) {
 
             values.put(MyHelper.ColumnsOrderAfter.PRODUCTNAME, item.name);
-            values.put(MyHelper.ColumnsOrderAfter.PRICE, item.price * itemList.get(item._id -1).idx);
-            values.put(MyHelper.ColumnsOrderAfter.QUANTITY, itemList.get(item._id - 1).idx);
+            values.put(MyHelper.ColumnsOrderAfter.PRICE, item.price * itemList.get(item._id + i).idx);
+            values.put(MyHelper.ColumnsOrderAfter.QUANTITY, itemList.get(item._id + i).idx);
+
+
 
             // データベースに行を追加する
             long id = db.insert(MyHelper.TABLE_NAME_ORDER_AFTER, null, values);
             if (id == -1) {
                 Log.d("Database", "Insert Failed");
+            } else {
+                Log.d("db", String.valueOf(itemList.get(item._id + i)._id));
             }
         }
         db.close();
