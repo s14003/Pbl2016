@@ -30,7 +30,6 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
     private Database myHelper;
     private Handler mHandler;
-    ProductItem items = new ProductItem();
 
     @Override
     public void onClick(View view) {
@@ -59,15 +58,14 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
         int priceIndex = cursor.getColumnIndex(Database.Columns.PRICE);
         int quantityIndex = cursor.getColumnIndex(Database.Columns.quantity);
 
-        // 5. 行を読み込む。
-        itemList.removeAll(itemList);
+        // 5. 行を読み込む
         msg += "これらの商品を購入してもよろしいですか？\n\n";
         do {
             ProductItem item = new ProductItem();
             item._id = cursor.getInt(_idIndex);
             item.name = cursor.getString(nameIndex);
             item.price = cursor.getInt(priceIndex);
-            item.num = cursor.getInt(quantityIndex);
+            item.num = item.idx;
 
             Log.d("selectProductList",
                     "_id = " + item._id + "\n" +
@@ -75,10 +73,9 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
                             "price = " + item.price + "\n" +
                             "stock = " + item.num);
 
-            itemList.add(item);
 
-            msg += item.name + "  　　" + items.idx + "個 　　 " + item.price * Integer.valueOf(items.idx) + "円\n";
-            priceSum += item.price;
+            msg += item.name + "  　　" + itemList.get(item._id -1).idx + "個 　　 " + item.price * itemList.get(item._id - 1).idx + "円\n";
+            priceSum += (item.price * itemList.get(item._id - 1).idx);
 
             // 読込位置を次の行に移動させる
             // 次の行が無い時はfalseを返すのでループを抜ける
@@ -102,7 +99,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // OKボタンクリック処理
-//                        insertProduct();
+                        insertProduct();
                     }
                 }
         );
@@ -121,7 +118,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
     }
 
     //データベースに発注したものを登録
-    private void insertProduct(ProductItem productdata) {
+    private void insertProduct() {
 
         ProductItem item = new ProductItem();
 
@@ -129,11 +126,11 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
         ContentValues values = new ContentValues();
 
-        for(int i = 0; i< itemDbList.size(); i++) {
+        for(int i = 0; i< itemList.size(); i++) {
 
-            values.put(Database.Columns.productname, productdata.name);
-            values.put(Database.Columns.PRICE, productdata.price);
-            values.put(Database.Columns.quantity, productdata.num);
+            values.put(Database.Columns.af_productname, item.name);
+            values.put(Database.Columns.af_price, item.price * itemList.get(item._id -1).idx);
+            values.put(Database.Columns.af_quantity, itemList.get(item._id - 1).idx);
 
             // データベースに行を追加する
             long id = db.insert(Database.TABLE_NAME, null, values);
@@ -141,6 +138,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
                 Log.d("Database", "行の追加に失敗したよ");
             }
         }
+        db.close();
     }
 
     @Override
@@ -153,7 +151,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
         String name;
         int price;
         int num;
-        String idx = "1";
+        int idx = 1;
     }
 
     private List<ProductItem> itemList;
@@ -397,9 +395,10 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
 
             Log.d("ProductList", "getView");
+            Log.d("product", String.valueOf(position));
 
 
             View view = inflater.inflate(R.layout.order_row, null, false);
@@ -420,8 +419,17 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     Spinner spinner = (Spinner) adapterView;
-                    showToast(Integer.toString(spinner.getSelectedItemPosition()));
-                    items.idx = (String)spinner.getSelectedItem();
+                    Log.d("onItemSelected: i", String.valueOf(i));
+                    Log.d("onItemSelected", (String)spinner.getSelectedItem());
+
+                    ProductItem Item = new ProductItem();
+
+                    Item._id = itemList.get(position)._id;
+                    Item.name = itemList.get(position).name;
+                    Item.price = itemList.get(position).price;
+                    Item.idx = Integer.parseInt(spinner.getSelectedItem().toString());
+
+                    itemList.set(position, Item);
                 }
 
                 @Override

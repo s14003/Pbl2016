@@ -25,14 +25,18 @@ public class Database extends SQLiteOpenHelper {
     private static final String SQL_CREATE_ORDERAFTERTABLE =
             "CREATE TABLE " + TABLE_NAME + "(" +
                     Columns._ID + " INTEGER primary key autoincrement," +
-                    Columns.productname + " TEXT," +
-                    Columns.PRICE + " INTEGER," +
-                    Columns.quantity + " INTEGER)";
+                    Columns.af_productname + " TEXT," +
+                    Columns.af_price + " INTEGER," +
+                    Columns.af_quantity + " INTEGER)";
 
     public interface Columns extends BaseColumns {
         public static final String productname = "productname";
         public static final String quantity = "quantity";
         public static final String PRICE  = "price";
+        public static final String af_productname = "af_productname";
+        public static final String af_quantity = "af_quantity";
+        public static final String af_price  = "af_price";
+
     }
 
     public Database(Context context) {
