@@ -214,6 +214,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
     }
 
     private Spinner productSpinner;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
