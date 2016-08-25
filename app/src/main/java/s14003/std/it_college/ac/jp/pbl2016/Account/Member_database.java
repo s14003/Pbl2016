@@ -1,3 +1,4 @@
+/*
 package s14003.std.it_college.ac.jp.pbl2016.Account;
 
 import android.content.Context;
@@ -56,3 +57,4 @@ public class Member_database extends SQLiteOpenHelper {
 
     }
 }
+*/
