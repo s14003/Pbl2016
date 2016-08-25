@@ -19,7 +19,7 @@ public class MyDatabase extends SQLiteOpenHelper {
      * Account Table
      * 会員テーブル
      */
-    public final static String ACCOUNT_TABLE = "Account";
+    public final static String TABLE_NAME_ACCOUNT = "Account";
 
     public interface ColumnsAccount extends BaseColumns {
         public static final String LastName = "LastName";
@@ -29,8 +29,7 @@ public class MyDatabase extends SQLiteOpenHelper {
         public static final String Password = "Password";
     }
 
-    private final static String SQL_CREATE_TABLE_ACCOUNT =
-            "create table " + ACCOUNT_TABLE + "(" +
+    private final static String SQL_CREATE_TABLE_ACCOUNT = "CREATE TABLE " + TABLE_NAME_ACCOUNT + "(" +
                     ColumnsAccount.LastName + " Text," +
                     ColumnsAccount.FirstName + " Text," +
                     ColumnsAccount.MailAddres + " Text primary key," +
@@ -94,14 +93,14 @@ public class MyDatabase extends SQLiteOpenHelper {
      * BlackList Table
      * ブラックリストテーブル
      */
-    public final static String BLACK_LIST_TABLE = "BlackList";
+    public final static String TABLE_NAME_BLACK_LIST = "BlackList";
 
     public interface ColumnsBlackList extends BaseColumns {
         public static final String MAILADDRESS = "MailAddress";
         public static final String TOTALORDER = "Totalorder";
     }
 
-    private final static String SQL_CREATE_TABLE_BLACKLIST = "CREATE TABLE " + BLACK_LIST_TABLE + "(" +
+    private final static String SQL_CREATE_TABLE_BLACKLIST = "CREATE TABLE " + TABLE_NAME_BLACK_LIST + "(" +
             ColumnsBlackList.MAILADDRESS + " TEXT primary key," +
             ColumnsBlackList.TOTALORDER + " INTEGER);";
 
