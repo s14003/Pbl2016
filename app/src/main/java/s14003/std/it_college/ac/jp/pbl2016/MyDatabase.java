@@ -19,21 +19,20 @@ public class MyDatabase extends SQLiteOpenHelper {
      * Account Table
      * 会員テーブル
      */
-    public final static String ACCOUNT_TABLE = "Account";
+    public final static String TABLE_NAME_ACCOUNT = "Account";
 
     public interface ColumnsAccount extends BaseColumns {
         public static final String LastName = "LastName";
         public static final String FirstName = "FirstName";
-        public static final String MailAddres = "MailAddress";
+        public static final String MailAddress = "MailAddress";
         public static final String Address = "Address";
         public static final String Password = "Password";
     }
 
-    private final static String SQL_CREATE_TABLE_ACCOUNT =
-            "create table " + ACCOUNT_TABLE + "(" +
+    private final static String SQL_CREATE_TABLE_ACCOUNT = "CREATE TABLE " + TABLE_NAME_ACCOUNT + "(" +
                     ColumnsAccount.LastName + " Text," +
                     ColumnsAccount.FirstName + " Text," +
-                    ColumnsAccount.MailAddres + " Text primary key," +
+                    ColumnsAccount.MailAddress + " Text primary key," +
                     ColumnsAccount.Address + " Text," +
                     ColumnsAccount.Password + " Text);";
 
@@ -41,7 +40,7 @@ public class MyDatabase extends SQLiteOpenHelper {
      * Order Table
      * 注文テーブル
      */
-    public static final String TABLE_NAME_ORDER = "Order";
+    public static final String TABLE_NAME_ORDER = "Order_Table";
 
     public interface ColumnsOrder extends BaseColumns {
         public static final String ORDERID = "Orderid";
@@ -58,7 +57,7 @@ public class MyDatabase extends SQLiteOpenHelper {
             ColumnsOrder.PRODUCTNAME + " TEXT," +
             ColumnsOrder.QUANTITY + " INTEGER," +
             ColumnsOrder.PRICE + " INTEGER," +
-            ColumnsOrder.PRODUCTID + " INTEGER)";
+            ColumnsOrder.PRODUCTID + " INTEGER);";
 
     /**
      * OrderAfter Table
@@ -80,8 +79,7 @@ public class MyDatabase extends SQLiteOpenHelper {
             ColumnsOrderAfter.PRODUCTNAME + " TEXT," +
             ColumnsOrderAfter.QUANTITY + " INTEGER," +
             ColumnsOrderAfter.PRICE + " INTEGER," +
-            ColumnsOrderAfter.PRODUCTID + " INTEGER)";
-
+            ColumnsOrderAfter.PRODUCTID + " INTEGER);";
 
     /**
      * CodeM Table
@@ -94,14 +92,14 @@ public class MyDatabase extends SQLiteOpenHelper {
      * BlackList Table
      * ブラックリストテーブル
      */
-    public final static String BLACK_LIST_TABLE = "BlackList";
+    public final static String TABLE_NAME_BLACK_LIST = "BlackList";
 
     public interface ColumnsBlackList extends BaseColumns {
         public static final String MAILADDRESS = "MailAddress";
         public static final String TOTALORDER = "Totalorder";
     }
 
-    private final static String SQL_CREATE_TABLE_BLACKLIST = "CREATE TABLE " + BLACK_LIST_TABLE + "(" +
+    private final static String SQL_CREATE_TABLE_BLACKLIST = "CREATE TABLE " + TABLE_NAME_BLACK_LIST + "(" +
             ColumnsBlackList.MAILADDRESS + " TEXT primary key," +
             ColumnsBlackList.TOTALORDER + " INTEGER);";
 
@@ -123,7 +121,7 @@ public class MyDatabase extends SQLiteOpenHelper {
             ColumnsProducts.ID + " INTEGER," +
             ColumnsProducts.PRODUCTNAME + " TEXT," +
             ColumnsProducts.PRICE + " INTEGER," +
-            ColumnsProducts.STOCK + " INTEGER" + ")";
+            ColumnsProducts.STOCK + " INTEGER" + ");";
 
 
     public MyDatabase(Context context) {
