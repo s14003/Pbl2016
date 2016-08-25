@@ -1,5 +1,6 @@
 package s14003.std.it_college.ac.jp.pbl2016.Account;
 
+import s14003.std.it_college.ac.jp.pbl2016.MyDatabase;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,11 +17,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import s14003.std.it_college.ac.jp.pbl2016.Product.ProductView;
 import s14003.std.it_college.ac.jp.pbl2016.R;
 
 public class CreateAccount extends AppCompatActivity {
 
-    private Member_database mdb;
+    private MyDatabase mdb;
 
     private DataStr date;
 
@@ -29,7 +31,7 @@ public class CreateAccount extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
 
-        mdb = new Member_database(this);
+        mdb = new MyDatabase(this);
 
         final AlertDialog.Builder alert = new AlertDialog.Builder(this);
         final AlertDialog.Builder datealert = new AlertDialog.Builder(this);
@@ -142,7 +144,7 @@ public class CreateAccount extends AppCompatActivity {
                                         //Emailをしぇあする
                                         setShare(date.Email);
                                         // 商品一覧画面に飛ばす
-                                        //StartActivity();
+                                        StartActivity();
                                     }
                                 }
                             });
@@ -175,23 +177,23 @@ public class CreateAccount extends AppCompatActivity {
 
         ContentValues values = new ContentValues();
 
-        values.put(Member_database.Columns.LastName, accountdata.surname);
-        values.put(Member_database.Columns.FirstName, accountdata.editname);
-        values.put(Member_database.Columns.MailAdddres, accountdata.Email);
-        values.put(Member_database.Columns.Address, accountdata.address);
-        values.put(Member_database.Columns.password, accountdata.password);
+        values.put(MyDatabase.ColumnsAccount.LastName, accountdata.surname);
+        values.put(MyDatabase.ColumnsAccount.FirstName, accountdata.editname);
+        values.put(MyDatabase.ColumnsAccount.MailAddress, accountdata.Email);
+        values.put(MyDatabase.ColumnsAccount.Address, accountdata.address);
+        values.put(MyDatabase.ColumnsAccount.Password, accountdata.password);
 
         ContentValues blackvalues = new ContentValues();
-        blackvalues.put(Member_database.Columns.MailAdddres, accountdata.Email);
-        blackvalues.put(Member_database.Columns.totalorder, 0);
+        blackvalues.put(MyDatabase.ColumnsAccount.MailAddress, accountdata.Email);
+        blackvalues.put(MyDatabase.ColumnsBlackList.TOTALORDER, 0);
 
         Log.d("NOW", accountdata.Email + " " + accountdata.password);
 
         long ret;
         long black;
         try {
-            ret = db.insert(mdb.TABLE_NAME, null, values);
-            black = db.insert(mdb.BLACK_LIST_TABLE, null,blackvalues);
+          ret = db.insert(mdb.TABLE_NAME_ACCOUNT, null, values);
+            black = db.insert(mdb.TABLE_NAME_BLACK_LIST, null,blackvalues);
         }finally {
             db.close();
         }
@@ -212,9 +214,9 @@ public class CreateAccount extends AppCompatActivity {
 
         SQLiteDatabase db_q = mdb.getReadableDatabase();
 
-        String where = Member_database.Columns.MailAdddres + "=?";
+        String where = MyDatabase.ColumnsAccount.MailAddress + "=?";
         String [] args = {target};
-        Cursor cursor = db_q.query(mdb.TABLE_NAME,null, where, args,null, null, null);
+        Cursor cursor = db_q.query(mdb.TABLE_NAME_ACCOUNT,null, where, args,null, null, null);
         if(cursor.moveToFirst()){
             Log.d("Emailserch", "overlap");
             return true;
@@ -233,10 +235,10 @@ public class CreateAccount extends AppCompatActivity {
         editor.apply();
     }
     private void StartActivity(){
-        //Intent inte = new Intent(this,ProductView.class);
+        Intent inte = new Intent(this,ProductView.class);
         //under line test code
         //Intent inte = new Intent(this,Account_Profile.class);
-        //startActivity(inte);
+        startActivity(inte);
     }
 }
 
