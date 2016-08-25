@@ -24,7 +24,7 @@ public class MyDatabase extends SQLiteOpenHelper {
     public interface ColumnsAccount extends BaseColumns {
         public static final String LastName = "LastName";
         public static final String FirstName = "FirstName";
-        public static final String MailAddres = "MailAddress";
+        public static final String MailAddress = "MailAddress";
         public static final String Address = "Address";
         public static final String Password = "Password";
     }
@@ -32,7 +32,7 @@ public class MyDatabase extends SQLiteOpenHelper {
     private final static String SQL_CREATE_TABLE_ACCOUNT = "CREATE TABLE " + TABLE_NAME_ACCOUNT + "(" +
                     ColumnsAccount.LastName + " Text," +
                     ColumnsAccount.FirstName + " Text," +
-                    ColumnsAccount.MailAddres + " Text primary key," +
+                    ColumnsAccount.MailAddress + " Text primary key," +
                     ColumnsAccount.Address + " Text," +
                     ColumnsAccount.Password + " Text);";
 
