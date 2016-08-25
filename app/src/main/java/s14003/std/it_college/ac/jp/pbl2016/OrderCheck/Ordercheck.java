@@ -42,9 +42,8 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
         // 2. query()を呼び、検索を行う
         Cursor cursor =
-
-                db.query(MyHelper.TABLE_NAME_PRODUCTS , null, null, null, null, null,
-                        MyHelper.ColumnsOrder.PRODUCTID + " ASC");
+                db.query(MyHelper.TABLE_NAME_ORDER, null, null, null, null, null,
+                        MyHelper.ColumnsOrder.ORDERID + " ASC");
 
         // 3. 読込位置を先頭にする。falseの場合は結果0件
         if(!cursor.moveToFirst()){
@@ -101,6 +100,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // OKボタンクリック処理
                         insertProduct();
+                        delete_stock();
                     }
                 }
         );
@@ -121,9 +121,10 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
     //データベースに発注したものを登録
     private void insertProduct() {
 
-        ProductItem item = new ProductItem();
+        SQLiteDatabase db = myHelper.getReadableDatabase();
 
-        SQLiteDatabase db = myHelper.getWritableDatabase();
+
+        ProductItem item = new ProductItem();
 
         ContentValues values = new ContentValues();
 
@@ -139,12 +140,40 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
             long id = db.insert(MyHelper.TABLE_NAME_ORDER_AFTER, null, values);
             if (id == -1) {
                 Log.d("Database", "Insert Failed");
+                Toast.makeText(this, "注文確定できませんでした。", Toast.LENGTH_SHORT).show();
             } else {
                 Log.d("db", String.valueOf(itemList.get(item._id + i)._id));
+                Toast.makeText(this, "注文確定できました。", Toast.LENGTH_SHORT).show();
             }
         }
         db.close();
     }
+
+    public void delete_stock() {
+
+        SQLiteDatabase db = myHelper.getReadableDatabase();
+
+        Cursor cursor = db.query(MyHelper.TABLE_NAME_PRODUCTS, null, null, null, null, null,
+                MyHelper.ColumnsOrder._ID + " ASC");
+
+        int stock_num = cursor.getColumnIndex(MyHelper.ColumnsProducts.STOCK);
+
+        ProductItem item = new ProductItem();
+        ContentValues values = new ContentValues();
+
+
+        for(int i = 0; i< itemList.size(); i++) {
+
+            values.put(MyHelper.ColumnsProducts.STOCK, stock_num - itemList.get(item._id + i).idx);
+
+            // データベースに行を追加する
+            long id = db.insert(MyHelper.TABLE_NAME_PRODUCTS, null, values);
+
+        }
+        db.close();
+
+    }
+
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -169,8 +198,8 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
         // 2. query()を呼び、検索を行う
         Cursor cursor =
-                db.query(MyHelper.TABLE_NAME_PRODUCTS, null, null, null, null, null,
-                        MyHelper.ColumnsOrder.PRODUCTID + " ASC");
+                db.query(MyHelper.TABLE_NAME_ORDER, null, null, null, null, null,
+                        MyHelper.ColumnsOrder.ORDERID + " ASC");
 
         // 3. 読込位置を先頭にする。falseの場合は結果0件
         if(!cursor.moveToFirst()){
@@ -216,7 +245,6 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
     }
 
     private Spinner productSpinner;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -227,6 +255,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
         mHandler = new Handler();
 
 //        initTable();
+
 
         itemList = new ArrayList<ProductItem>();
 
@@ -399,6 +428,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
             inflater =
                     (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
+
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
