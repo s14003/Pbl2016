@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -25,11 +26,13 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import s14003.std.it_college.ac.jp.pbl2016.MyDatabase;
+import s14003.std.it_college.ac.jp.pbl2016.Product.ProductView;
 import s14003.std.it_college.ac.jp.pbl2016.R;
 
 public class Ordercheck extends Activity implements AdapterView.OnItemClickListener, View.OnClickListener {
 
-    private MyHelper myHelper;
+    private MyDatabase myHelper;
     private Handler mHandler;
     private List<OrderItem> orderItemList;
 
@@ -53,8 +56,8 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
         // 2. query()を呼び、検索を行う
         Cursor cursor =
-                db.query(MyHelper.TABLE_NAME_ORDER, null, null, null, null, null,
-                        MyHelper.ColumnsOrder.ORDERID + " ASC");
+                db.query(MyDatabase.TABLE_NAME_ORDER, null, null, null, null, null,
+                        MyDatabase.ColumnsOrder.ORDERID + " ASC");
 
         // 3. 読込位置を先頭にする。falseの場合は結果0件
         if(!cursor.moveToFirst()){
@@ -64,13 +67,14 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
         }
 
         // 4. 列のindex(位置)を取得する
-        int _idIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.ORDERID);
-        int nameIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.PRODUCTNAME);
-        int priceIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.PRICE);
-        int quantityIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.QUANTITY);
+        int _idIndex = cursor.getColumnIndex(MyDatabase.ColumnsOrder.ORDERID);
+        int nameIndex = cursor.getColumnIndex(MyDatabase.ColumnsOrder.PRODUCTNAME);
+        int priceIndex = cursor.getColumnIndex(MyDatabase.ColumnsOrder.PRICE);
+        int quantityIndex = cursor.getColumnIndex(MyDatabase.ColumnsOrder.QUANTITY);
 
         // 5. 行を読み込む
         msg += "これらの商品を購入してもよろしいですか？\n\n";
+        //int i = 0;
         do {
             ProductItem item = new ProductItem();
             item._id = cursor.getInt(_idIndex);
@@ -85,11 +89,14 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
                             "stock = " + item.num);
 
 
-            msg += item.name + "  　　" + itemList.get(item._id -1).idx + "個 　　 " + item.price * itemList.get(item._id - 1).idx + "円\n";
-            priceSum += (item.price * itemList.get(item._id - 1).idx);
+            msg += item.name + "  　　" + itemList.get(item._id).idx + "個 　　 " + item.price * itemList.get(item._id ).idx + "円\n";
+            priceSum += (item.price * itemList.get(item._id ).idx);
+            //msg += item.name + "  　　" + itemList.get(i).idx + "個 　　 " + item.price * itemList.get(i).idx + "円\n";
+            //priceSum += (item.price * itemList.get(i).idx);
 
             // 読込位置を次の行に移動させる
             // 次の行が無い時はfalseを返すのでループを抜ける
+            //i++;
         }while (cursor.moveToNext());
 
         // 6. Cursorを閉じる
@@ -138,23 +145,27 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
         ProductItem item = new ProductItem();
 
         ContentValues values = new ContentValues();
+        SharedPreferences spData = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
+        String mailAddr = spData.getString("Mailsave", "");
 
         for(int i = 0; i< itemList.size(); i++) {
-
-            values.put(MyHelper.ColumnsOrderAfter.PRODUCTNAME, item.name);
-            values.put(MyHelper.ColumnsOrderAfter.PRICE, item.price * itemList.get(item._id + i).idx);
-            values.put(MyHelper.ColumnsOrderAfter.QUANTITY, itemList.get(item._id + i).idx);
-
-
+            values.put(MyDatabase.ColumnsOrderAfter.MAILADDRESS, mailAddr);
+            values.put(MyDatabase.ColumnsOrderAfter.PRODUCTNAME, itemList.get(i).name);
+            //values.put(MyDatabase.ColumnsOrderAfter.PRICE, item.price * itemList.get(item._id + i).idx);
+            values.put(MyDatabase.ColumnsOrderAfter.PRICE, itemList.get(i).price * itemList.get(i).idx);
+            values.put(MyDatabase.ColumnsOrderAfter.QUANTITY, itemList.get(item._id + i).idx);
 
             // データベースに行を追加する
-            long id = db.insert(MyHelper.TABLE_NAME_ORDER_AFTER, null, values);
+            Log.d("NOWDE", String.valueOf(itemList.get(i).name) + String.valueOf(itemList.get(i).price) +
+                    String.valueOf(itemList.get(i).idx));
+            long id = db.insert(MyDatabase.TABLE_NAME_ORDERAFTER, null, values);
             if (id == -1) {
                 Log.d("Database", "Insert Failed");
                 Toast.makeText(this, "注文確定できませんでした。", Toast.LENGTH_SHORT).show();
             } else {
                 Log.d("db", String.valueOf(itemList.get(item._id + i)._id));
                 Toast.makeText(this, "注文確定できました。", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, ProductView.class));
             }
         }
         db.close();
@@ -164,10 +175,10 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
         SQLiteDatabase db = myHelper.getReadableDatabase();
 
-        Cursor cursor = db.query(MyHelper.TABLE_NAME_PRODUCTS, null, null, null, null, null,
-                MyHelper.ColumnsOrder._ID + " ASC");
+        Cursor cursor = db.query(MyDatabase.TABLE_NAME_PRODUCTS, null, null, null, null, null,
+                MyDatabase.ColumnsOrder._ID + " ASC");
 
-        int stock_num = cursor.getColumnIndex(MyHelper.ColumnsProducts.STOCK);
+        int stock_num = cursor.getColumnIndex(MyDatabase.ColumnsProducts.STOCK);
 
         ProductItem item = new ProductItem();
         ContentValues values = new ContentValues();
@@ -175,16 +186,15 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
         for(int i = 0; i< itemList.size(); i++) {
 
-            values.put(MyHelper.ColumnsProducts.STOCK, stock_num - itemList.get(item._id + i).idx);
+            values.put(MyDatabase.ColumnsProducts.STOCK, stock_num - itemList.get(item._id + i).idx);
 
             // データベースに行を追加する
-            long id = db.insert(MyHelper.TABLE_NAME_PRODUCTS, null, values);
+            long id = db.insert(MyDatabase.TABLE_NAME_PRODUCTS, null, values);
 
         }
         db.close();
 
     }
-
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -209,12 +219,16 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ordercheck);
 
-        myHelper = new MyHelper(this);
+        myHelper = new MyDatabase(this);
 
         mHandler = new Handler();
 
 //        initTable();
+        SharedPreferences spData = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
+        String mailAddr = spData.getString("Mailsave", "");
+        Log.d("NOW", "Ordercheck.onCreate " + mailAddr);
 
+        orderItemList = new ArrayList<>();
 
         itemList = new ArrayList<ProductItem>();
 
@@ -265,7 +279,6 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
     }
 
     private void setProductData(){
-
         selectProductList();
 
     }
@@ -325,9 +338,6 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
             });
             adapter.setNotifyOnChange(true);
 
-
-
-
             ProductItem item = getItem(position);
             nameView.setText(item.name);
             priceView.setText(String.valueOf(item.price));
@@ -353,43 +363,45 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
         // 2. query()を呼び、検索を行う
         // メールアドレス、商品名、値段、数量を指定
         String[] cols = {
-                MyHelper.ColumnsOrderAfter.MAILADDRESS,
-                MyHelper.ColumnsOrderAfter.PRODUCTNAME,
-                MyHelper.ColumnsOrderAfter.PRICE,
-                MyHelper.ColumnsOrderAfter.QUANTITY,
-                MyHelper.ColumnsOrderAfter.ORDERID
+                MyDatabase.ColumnsOrder.MAILADDRESS,
+                MyDatabase.ColumnsOrder.PRODUCTNAME,
+                MyDatabase.ColumnsOrder.PRICE,
+                MyDatabase.ColumnsOrder.QUANTITY,
+                MyDatabase.ColumnsOrder.ORDERID
         };
         // 発注者のメールアドレスとログインアドレスが同じレコードのみを指定
-        String selection = MyHelper.ColumnsOrderAfter.MAILADDRESS + " = ?";
+        String selection = MyDatabase.ColumnsOrder.MAILADDRESS + " = ?";
         SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
         String mailAddr = data.getString("Mailsave", "");
+        Log.d("NOW", "Ordercheck.select " + mailAddr);
         String[] selectionArgs = {mailAddr};
-        Cursor cursor = db.query(MyHelper.TABLE_NAME_ORDER, cols, selection, selectionArgs, null, null,
-                MyHelper.ColumnsOrder.ORDERID + " ASC");
+        Cursor cursor = db.query(MyDatabase.TABLE_NAME_ORDER, cols, selection, selectionArgs, null, null,
+                MyDatabase.ColumnsOrder.ORDERID + " ASC");
 
         // 3. 読み込み位置を先頭にする、falseの場合は結果０件
         if (!cursor.moveToFirst()) {
+            Log.d("NOW", "ordercheckclose" + mailAddr);
             cursor.close();
             db.close();
             return;
         }
 
         // 4. 列のindex(位置)を取得する
-        int productnameIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.PRODUCTNAME);
-        int priceIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.PRICE);
-        int quantityIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.QUANTITY);
-        int orderIdIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.ORDERID);
+        int productnameIndex = cursor.getColumnIndex(MyDatabase.ColumnsOrder.PRODUCTNAME);
+        int priceIndex = cursor.getColumnIndex(MyDatabase.ColumnsOrder.PRICE);
+        int quantityIndex = cursor.getColumnIndex(MyDatabase.ColumnsOrder.QUANTITY);
+        int orderIdIndex = cursor.getColumnIndex(MyDatabase.ColumnsOrder.ORDERID);
 
         // 5. 行を読み込む
-        orderItemList.removeAll(orderItemList);
+        itemList.removeAll(itemList);
         do {
-            OrderItem item = new OrderItem();
-            item.productName = cursor.getString(productnameIndex);
+            ProductItem item = new ProductItem();
+            item.name = cursor.getString(productnameIndex);
             item.price = cursor.getInt(priceIndex);
-            item.quantity = cursor.getInt(quantityIndex);
-            item.orderId = cursor.getInt(orderIdIndex);
+            item.num = cursor.getInt(quantityIndex);
+            item._id = cursor.getInt(orderIdIndex);
 
-            orderItemList.add(item);
+            itemList.add(item);
         } while (cursor.moveToNext());
 
         // 6. Cursorを閉じる

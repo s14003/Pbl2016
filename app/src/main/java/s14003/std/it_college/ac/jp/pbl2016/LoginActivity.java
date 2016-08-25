@@ -3,7 +3,9 @@ package s14003.std.it_college.ac.jp.pbl2016;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
@@ -39,10 +41,7 @@ import s14003.std.it_college.ac.jp.pbl2016.Account.CreateAccount;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
-import s14003.std.it_college.ac.jp.pbl2016.MyDatabase;
-import s14003.std.it_college.ac.jp.pbl2016.Product.MyHelper;
 import s14003.std.it_college.ac.jp.pbl2016.Product.ProductView;
-import s14003.std.it_college.ac.jp.pbl2016.Account.CreateAccount;
 
 /**
  * A login screen that offers login via email/password.
@@ -176,8 +175,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private void attemptLogin() {
 
-        //SharedPreferences mailaddress = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
-        //String mail_dummy = mailaddress.getString("Mailsave", "");
         String mail_dummy = "foo@example.com";
 
         //String password_dummy = getPassword(mail_dummy, "fooexample");
@@ -194,7 +191,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
-        Log.d("NOW", email + " " + password);
 
         // TODO: AccountTableからMailAddressとPassword情報を取得
         boolean isRegisteredMailAddress = true;   //メールアドレスがアカウントテーブルに登録されているか
@@ -210,15 +206,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         Cursor cursor = db.query(MyDatabase.TABLE_NAME_ACCOUNT, cols, selection, selectionArgs, null, null, null);
         // 1件もヒットしなかったらアカウント未登録
         if (!cursor.moveToFirst()) {
-            Log.d("NOW", "Account NOT");
             isRegisteredMailAddress = false;
         }
         else {
-            // 現在の商品テーブルのストックに注文テーブルの数量を加算した値を求める
             int mailAddrIndex = cursor.getColumnIndex(MyDatabase.ColumnsAccount.MailAddress);
             mail_dummy = cursor.getString(mailAddrIndex);
             int passwordIndex = cursor.getColumnIndex(MyDatabase.ColumnsAccount.Password);
-            Log.d("NOW", String.valueOf(passwordIndex));
             password_dummy = cursor.getString(passwordIndex);
         }
 
@@ -271,6 +264,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
+            SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = data.edit();
+            editor.putString("Mailsave", email);
+            editor.apply();
+
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
@@ -392,8 +390,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
-            Log.d("background","ok");
-
 
 //            SQLiteDatabase db;
 
