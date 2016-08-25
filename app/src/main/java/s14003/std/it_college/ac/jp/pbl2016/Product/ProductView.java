@@ -29,13 +29,14 @@ import java.util.List;
 //import s14003.std.it_college.ac.jp.pbl2016.ChangeAccountInformationActivity;
 import s14003.std.it_college.ac.jp.pbl2016.Account.Account_Profile;
 import s14003.std.it_college.ac.jp.pbl2016.LoginActivity;
+import s14003.std.it_college.ac.jp.pbl2016.MyDatabase;
 import s14003.std.it_college.ac.jp.pbl2016.Product.OrderCancelActivity;
 //import s14003.std.it_college.ac.jp.pbl2016.OrderCheckActivity;
 import s14003.std.it_college.ac.jp.pbl2016.OrderCheck.Ordercheck;
 import s14003.std.it_college.ac.jp.pbl2016.R;
 
 public class ProductView extends AppCompatActivity {
-    private MyHelper myHelper;
+    private MyDatabase myHelper;
     private Handler mHandler;
     private List<ProductItem> itemList;
     private List<ProductDbItem> itemDbList;
@@ -112,7 +113,7 @@ public class ProductView extends AppCompatActivity {
         setContentView(R.layout.activity_product_view);
         // DBマネージャーを生成
 
-        myHelper = new MyHelper(this);
+        myHelper = new MyDatabase(this);
 
         // ハンドラを生成
         mHandler = new Handler();
@@ -131,10 +132,12 @@ public class ProductView extends AppCompatActivity {
         // ログイン情報の初期化(デバッグ用)
         spData = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
         String mailAddr = spData.getString("Mailsave", "");
+        Log.d("NOW", "ProductView.onCreate" + mailAddr);
         if (mailAddr.isEmpty()) {
             SharedPreferences.Editor editor = spData.edit();
             editor.putString("Mailsave", "failed.com");
             editor.apply();
+            Log.d("NOW", "ProductView.isEmpty : " + mailAddr);
         }
 
         // ListViewの処理
@@ -275,20 +278,21 @@ public class ProductView extends AppCompatActivity {
         // アカウントメールアドレスを取得する
         SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
         String mailAddr = data.getString("Mailsave", "failed.com");
+        Log.d("NOW", "PRODUCTinsert" + mailAddr);
         ContentValues values = new ContentValues();
-        values.put(MyHelper.ColumnsOrder.MAILADDRESS, mailAddr);
-        values.put(MyHelper.ColumnsOrder.PRODUCTNAME, item.name);
-        values.put(MyHelper.ColumnsOrder.PRICE, item.price);
-        values.put(MyHelper.ColumnsOrder.PRODUCTID, item.id);
+        values.put(MyDatabase.ColumnsOrder.MAILADDRESS, mailAddr);
+        values.put(MyDatabase.ColumnsOrder.PRODUCTNAME, item.name);
+        values.put(MyDatabase.ColumnsOrder.PRICE, item.price);
+        values.put(MyDatabase.ColumnsOrder.PRODUCTID, item.id);
 
         // データベースに行を追加する
-        long id = db.insert(MyHelper.TABLE_NAME_ORDER, null, values);
+        long id = db.insert(MyDatabase.TABLE_NAME_ORDER, null, values);
         if (id == -1) {
             Log.v("CHECK_ORDER", "行の追加に失敗したよ" + mailAddr);
             return false;
         }
         else {
-            Log.v("CHECK_ORDER", "行の追加に成功したよ");
+            Log.v("CHECK_ORDER", "行の追加に成功したよ" + mailAddr);
         }
 
         db.close();
@@ -313,8 +317,8 @@ public class ProductView extends AppCompatActivity {
         SQLiteDatabase db = myHelper.getReadableDatabase();
 
         // 2. query()を呼び、検索を行う
-        Cursor cursor = db.query(MyHelper.TABLE_NAME_PRODUCTS, null, null, null, null, null,
-                MyHelper.ColumnsProducts._ID + " ASC");
+        Cursor cursor = db.query(MyDatabase.TABLE_NAME_PRODUCTS, null, null, null, null, null,
+                MyDatabase.ColumnsProducts._ID + " ASC");
 
         // 3. 読み込み位置を先頭にする、falseの場合は結果０件
         if (!cursor.moveToFirst()) {
@@ -324,11 +328,11 @@ public class ProductView extends AppCompatActivity {
         }
 
         // 4. 列のindex(位置)を取得する
-        int _idIndex = cursor.getColumnIndex(MyHelper.ColumnsProducts._ID);
-        int idIndex = cursor.getColumnIndex(MyHelper.ColumnsProducts.ID);
-        int nameIndex = cursor.getColumnIndex(MyHelper.ColumnsProducts.NAME);
-        int priceIndex = cursor.getColumnIndex(MyHelper.ColumnsProducts.PRICE);
-        int stockIndex = cursor.getColumnIndex(MyHelper.ColumnsProducts.STOCK);
+        int _idIndex = cursor.getColumnIndex(MyDatabase.ColumnsProducts._ID);
+        int idIndex = cursor.getColumnIndex(MyDatabase.ColumnsProducts.ID);
+        int nameIndex = cursor.getColumnIndex(MyDatabase.ColumnsProducts.PRODUCTNAME);
+        int priceIndex = cursor.getColumnIndex(MyDatabase.ColumnsProducts.PRICE);
+        int stockIndex = cursor.getColumnIndex(MyDatabase.ColumnsProducts.STOCK);
 
         // 5. 行を読み込む
         itemList.removeAll(itemList);
@@ -435,20 +439,20 @@ public class ProductView extends AppCompatActivity {
         SQLiteDatabase db = myHelper.getWritableDatabase();
 
         // 一旦を削除
-        int count = db.delete(MyHelper.TABLE_NAME_PRODUCTS, null, null);
+        int count = db.delete(MyDatabase.TABLE_NAME_PRODUCTS, null, null);
 
         for (int i = 0; i < itemDbList.size(); i++) {
             ProductDbItem item = itemDbList.get(i);
 
             // 列に対応する値をセットする
             ContentValues values = new ContentValues();
-            values.put(MyHelper.ColumnsProducts.ID, item.id);
-            values.put(MyHelper.ColumnsProducts.NAME, item.name);
-            values.put(MyHelper.ColumnsProducts.PRICE, item.price);
-            values.put(MyHelper.ColumnsProducts.STOCK, item.stock);
+            values.put(MyDatabase.ColumnsProducts.ID, item.id);
+            values.put(MyDatabase.ColumnsProducts.PRODUCTNAME, item.name);
+            values.put(MyDatabase.ColumnsProducts.PRICE, item.price);
+            values.put(MyDatabase.ColumnsProducts.STOCK, item.stock);
 
             // データベースに行を追加する
-            long id = db.insert(MyHelper.TABLE_NAME_PRODUCTS, null, values);
+            long id = db.insert(MyDatabase.TABLE_NAME_PRODUCTS, null, values);
             if (id == -1) {
                 Log.d("Database", "failed");
             }

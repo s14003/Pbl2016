@@ -187,6 +187,7 @@ public class CreateAccount extends AppCompatActivity {
         blackvalues.put(MyDatabase.ColumnsAccount.MailAddress, accountdata.Email);
         blackvalues.put(MyDatabase.ColumnsBlackList.TOTALORDER, 0);
 
+        Log.d("NOW", accountdata.Email + " " + accountdata.password);
 
         long ret;
         long black;

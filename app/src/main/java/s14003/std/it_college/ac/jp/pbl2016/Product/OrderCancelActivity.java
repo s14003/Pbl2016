@@ -24,11 +24,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import s14003.std.it_college.ac.jp.pbl2016.Product.MyHelper;
+import s14003.std.it_college.ac.jp.pbl2016.MyDatabase;
 import s14003.std.it_college.ac.jp.pbl2016.R;
 
 public class OrderCancelActivity extends AppCompatActivity {
-    private MyHelper myHelper;
+    private MyDatabase myHelper;
     private Handler mHandler;
     private List<OrderItem> orderItemList;
     private ItemAdapter adapter;
@@ -93,7 +93,7 @@ public class OrderCancelActivity extends AppCompatActivity {
         setContentView(R.layout.activity_order_cancel);
 
         // DBマネージャーを生成
-        myHelper = new MyHelper(this);
+        myHelper = new MyDatabase(this);
 
         // ハンドラを生成
         mHandler = new Handler();
@@ -258,12 +258,12 @@ public class OrderCancelActivity extends AppCompatActivity {
     private void updateProductListTable(SQLiteDatabase dbWrite, OrderItem item) throws Exception {
         // 商品名、数量を指定
         String[] cols = {
-                MyHelper.ColumnsProducts.NAME,
-                MyHelper.ColumnsProducts.STOCK
+                MyDatabase.ColumnsProducts.PRODUCTNAME,
+                MyDatabase.ColumnsProducts.STOCK
         };
-        String selection = MyHelper.ColumnsProducts.NAME + " = ?";
+        String selection = MyDatabase.ColumnsProducts.PRODUCTNAME + " = ?";
         String[] selectionArgs = {item.productName};
-        Cursor cursor = dbWrite.query(MyHelper.TABLE_NAME_PRODUCTS, cols, selection, selectionArgs, null, null, null);
+        Cursor cursor = dbWrite.query(MyDatabase.TABLE_NAME_PRODUCTS, cols, selection, selectionArgs, null, null, null);
 
         // 読み込み位置を先頭にする、falseの場合は結果０件
         if (!cursor.moveToFirst()) {
@@ -272,7 +272,7 @@ public class OrderCancelActivity extends AppCompatActivity {
         }
 
         // 現在の商品テーブルのストックに注文テーブルの数量を加算した値を求める
-        int stockIndex = cursor.getColumnIndex(MyHelper.ColumnsProducts.STOCK);
+        int stockIndex = cursor.getColumnIndex(MyDatabase.ColumnsProducts.STOCK);
         int updateStock = cursor.getInt(stockIndex) + item.quantity;
 
         // Cursorを閉じる
@@ -280,10 +280,10 @@ public class OrderCancelActivity extends AppCompatActivity {
 
         // 列に対応する値をセットする
         ContentValues values = new ContentValues();
-        values.put(MyHelper.ColumnsProducts.STOCK, updateStock);
+        values.put(MyDatabase.ColumnsProducts.STOCK, updateStock);
 
         // 加算した値をテーブルに反映させる
-        long id = dbWrite.update(MyHelper.TABLE_NAME_PRODUCTS, values, selection, selectionArgs);
+        long id = dbWrite.update(MyDatabase.TABLE_NAME_PRODUCTS, values, selection, selectionArgs);
         if (id == -1) {
             Log.v("NOW", "行の追加に失敗したよ");
             throw new Exception();
@@ -299,15 +299,15 @@ public class OrderCancelActivity extends AppCompatActivity {
     private void updateBlackListTable(SQLiteDatabase dbWrite, OrderItem item) throws Exception {
         // メールアドレス、注文合計額を指定
         String[] cols = {
-                MyHelper.ColumnsBlacklist.MAILADDRESS,
-                MyHelper.ColumnsBlacklist.TOTALORDER
+                MyDatabase.ColumnsBlackList.MAILADDRESS,
+                MyDatabase.ColumnsBlackList.TOTALORDER
         };
-        String selection = MyHelper.ColumnsBlacklist.MAILADDRESS + " = ?";
+        String selection = MyDatabase.ColumnsBlackList.MAILADDRESS + " = ?";
         // アカウントメールアドレスを取得する
         SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
         String mailAddr = data.getString("Mailsave", "failed.com");
         String[] selectionArgs = {mailAddr};
-        Cursor cursor = dbWrite.query(MyHelper.TABLE_NAME_BLACKLIST, cols, selection, selectionArgs, null, null, null);
+        Cursor cursor = dbWrite.query(MyDatabase.TABLE_NAME_BLACK_LIST, cols, selection, selectionArgs, null, null, null);
 
         // 3. 読み込み位置を先頭にする、falseの場合は結果０件
         if (!cursor.moveToFirst()) {
@@ -316,7 +316,7 @@ public class OrderCancelActivity extends AppCompatActivity {
         }
 
         // ブラックリストテーブルの注文合計額から(発注.数量 * 発注.数量)を減算した値を求める
-        int totalorderIndex = cursor.getColumnIndex(MyHelper.ColumnsBlacklist.TOTALORDER);
+        int totalorderIndex = cursor.getColumnIndex(MyDatabase.ColumnsBlackList.TOTALORDER);
         int updateTotalOrder = cursor.getInt(totalorderIndex) - (item.price * item.quantity);
 
         // 6. Cursorを閉じる
@@ -324,10 +324,10 @@ public class OrderCancelActivity extends AppCompatActivity {
 
         // 列に対応する値をセットする
         ContentValues values = new ContentValues();
-        values.put(MyHelper.ColumnsBlacklist.TOTALORDER, updateTotalOrder);
+        values.put(MyDatabase.ColumnsBlackList.TOTALORDER, updateTotalOrder);
 
         // 加算した値をテーブルに反映させる
-        long id = dbWrite.update(MyHelper.TABLE_NAME_BLACKLIST, values, selection, selectionArgs);
+        long id = dbWrite.update(MyDatabase.TABLE_NAME_BLACK_LIST, values, selection, selectionArgs);
         if (id == -1) {
             Log.v("CHECK_ORDER", "行の追加に失敗したよ");
             throw new Exception();
@@ -340,9 +340,9 @@ public class OrderCancelActivity extends AppCompatActivity {
      */
     private void updateOrderAfterListTable(SQLiteDatabase dbWrite, OrderItem item) throws Exception {
         // データベースから発注IDが同じレコードを削除する
-        String whereClause = MyHelper.ColumnsOrderAfter.ORDERID + " = ?";
+        String whereClause = MyDatabase.ColumnsOrderAfter.ORDERID + " = ?";
         String whereArgs[] = {String.valueOf(item.orderId)};
-        long id = dbWrite.delete(MyHelper.TABLE_NAME_ORDER_AFTER, whereClause, whereArgs);
+        long id = dbWrite.delete(MyDatabase.TABLE_NAME_ORDERAFTER, whereClause, whereArgs);
         if (id == -1) {
             Log.d("CHECK_ORDER", "レコードの削除に失敗したよ");
             throw new Exception();
@@ -373,32 +373,34 @@ public class OrderCancelActivity extends AppCompatActivity {
         // 2. query()を呼び、検索を行う
         // メールアドレス、商品名、値段、数量を指定
         String[] cols = {
-                MyHelper.ColumnsOrderAfter.MAILADDRESS,
-                MyHelper.ColumnsOrderAfter.PRODUCTNAME,
-                MyHelper.ColumnsOrderAfter.PRICE,
-                MyHelper.ColumnsOrderAfter.QUANTITY,
-                MyHelper.ColumnsOrderAfter.ORDERID
+                MyDatabase.ColumnsOrderAfter.MAILADDRESS,
+                MyDatabase.ColumnsOrderAfter.PRODUCTNAME,
+                MyDatabase.ColumnsOrderAfter.PRICE,
+                MyDatabase.ColumnsOrderAfter.QUANTITY,
+                MyDatabase.ColumnsOrderAfter.ORDERID
         };
         // 発注者のメールアドレスとログインアドレスが同じレコードのみを指定
-        String selection = MyHelper.ColumnsOrderAfter.MAILADDRESS + " = ?";
+        String selection = MyDatabase.ColumnsOrderAfter.MAILADDRESS + " = ?";
         SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
         String mailAddr = data.getString("Mailsave", "");
+        Log.d("NOW", "cancel" + mailAddr);
         String[] selectionArgs = {mailAddr};
-        Cursor cursor = db.query(MyHelper.TABLE_NAME_ORDER_AFTER, cols, selection, selectionArgs, null, null,
-                MyHelper.ColumnsOrder.ORDERID + " ASC");
+        Cursor cursor = db.query(MyDatabase.TABLE_NAME_ORDERAFTER, cols, selection, selectionArgs, null, null,
+                MyDatabase.ColumnsOrder.ORDERID + " ASC");
 
         // 3. 読み込み位置を先頭にする、falseの場合は結果０件
         if (!cursor.moveToFirst()) {
+            Log.d("NOW", "cancel 0件");
             cursor.close();
             db.close();
             return;
         }
 
         // 4. 列のindex(位置)を取得する
-        int productnameIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.PRODUCTNAME);
-        int priceIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.PRICE);
-        int quantityIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.QUANTITY);
-        int orderIdIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.ORDERID);
+        int productnameIndex = cursor.getColumnIndex(MyDatabase.ColumnsOrder.PRODUCTNAME);
+        int priceIndex = cursor.getColumnIndex(MyDatabase.ColumnsOrder.PRICE);
+        int quantityIndex = cursor.getColumnIndex(MyDatabase.ColumnsOrder.QUANTITY);
+        int orderIdIndex = cursor.getColumnIndex(MyDatabase.ColumnsOrder.ORDERID);
 
         // 5. 行を読み込む
         orderItemList.removeAll(orderItemList);
