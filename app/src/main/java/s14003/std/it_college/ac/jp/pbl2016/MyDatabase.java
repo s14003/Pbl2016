@@ -40,7 +40,7 @@ public class MyDatabase extends SQLiteOpenHelper {
      * Order Table
      * 注文テーブル
      */
-    public static final String TABLE_NAME_ORDER = "Order";
+    public static final String TABLE_NAME_ORDER = "Order_Table";
 
     public interface ColumnsOrder extends BaseColumns {
         public static final String ORDERID = "Orderid";
@@ -57,7 +57,7 @@ public class MyDatabase extends SQLiteOpenHelper {
             ColumnsOrder.PRODUCTNAME + " TEXT," +
             ColumnsOrder.QUANTITY + " INTEGER," +
             ColumnsOrder.PRICE + " INTEGER," +
-            ColumnsOrder.PRODUCTID + " INTEGER)";
+            ColumnsOrder.PRODUCTID + " INTEGER);";
 
     /**
      * OrderAfter Table
@@ -79,8 +79,7 @@ public class MyDatabase extends SQLiteOpenHelper {
             ColumnsOrderAfter.PRODUCTNAME + " TEXT," +
             ColumnsOrderAfter.QUANTITY + " INTEGER," +
             ColumnsOrderAfter.PRICE + " INTEGER," +
-            ColumnsOrderAfter.PRODUCTID + " INTEGER)";
-
+            ColumnsOrderAfter.PRODUCTID + " INTEGER);";
 
     /**
      * CodeM Table
@@ -122,7 +121,7 @@ public class MyDatabase extends SQLiteOpenHelper {
             ColumnsProducts.ID + " INTEGER," +
             ColumnsProducts.PRODUCTNAME + " TEXT," +
             ColumnsProducts.PRICE + " INTEGER," +
-            ColumnsProducts.STOCK + " INTEGER" + ")";
+            ColumnsProducts.STOCK + " INTEGER" + ");";
 
 
     public MyDatabase(Context context) {
