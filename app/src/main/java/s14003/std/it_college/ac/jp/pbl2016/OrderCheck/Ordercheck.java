@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -30,6 +31,16 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
     private MyHelper myHelper;
     private Handler mHandler;
+    private List<OrderItem> orderItemList;
+
+    private class OrderItem {
+        public int orderId;
+        public String mailAddress;
+        public String productName;
+        public int quantity;
+        public int price;
+        public int productId;
+    }
 
     @Override
     public void onClick(View view) {
@@ -191,58 +202,6 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
     private List<ProductItem> itemList;
     private ItemAdapter adapter;
 
-    private void selectProductList(){
-
-        // 1. SQLiteDatabaseオブジェクトを取得
-        SQLiteDatabase db = myHelper.getReadableDatabase();
-
-        // 2. query()を呼び、検索を行う
-        Cursor cursor =
-                db.query(MyHelper.TABLE_NAME_ORDER, null, null, null, null, null,
-                        MyHelper.ColumnsOrder.ORDERID + " ASC");
-
-        // 3. 読込位置を先頭にする。falseの場合は結果0件
-        if(!cursor.moveToFirst()){
-            cursor.close();
-            db.close();
-            return;
-        }
-
-        // 4. 列のindex(位置)を取得する
-        int _idIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.ORDERID);
-        int nameIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.PRODUCTNAME);
-        int priceIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.PRICE);
-        int quantityIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.QUANTITY);
-
-        // 5. 行を読み込む。
-        itemList.removeAll(itemList);
-        do {
-            ProductItem item = new ProductItem();
-            item._id = cursor.getInt(_idIndex);
-            item.name = cursor.getString(nameIndex);
-            item.price = cursor.getInt(priceIndex);
-            item.num = cursor.getInt(quantityIndex);
-
-            Log.d("selectProductList",
-                    "_id = " + item._id + "\n" +
-                            "name = " + item.name + "\n" +
-                            "price = " + item.price + "\n" +
-                            "stock = " + item.num);
-
-            itemList.add(item);
-
-            // 読込位置を次の行に移動させる
-            // 次の行が無い時はfalseを返すのでループを抜ける
-        }while (cursor.moveToNext());
-
-        // 6. Cursorを閉じる
-        cursor.close();
-
-        // 7. データベースを閉じる
-        db.close();
-
-        //return itemList;
-    }
 
     private Spinner productSpinner;
     @Override
@@ -307,114 +266,6 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
     private void setProductData(){
 
-//        ProductItem item = new ProductItem();
-//        item.name = "赤鉛筆";
-//        item.price = 500;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "青鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "黄鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "緑鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "紫鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "茶色鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "青鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "黄鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "緑鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "紫鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "茶色鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "青鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "黄鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "緑鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "紫鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "茶色鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "青鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "黄鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "緑鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "紫鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//        item = new ProductItem();
-//        item.name = "茶色鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemList.add(item);
-//
-//        adapter.notifyDataSetChanged();
-
         selectProductList();
 
     }
@@ -440,7 +291,6 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
             View view = inflater.inflate(R.layout.order_row, null, false);
             TextView nameView = (TextView)view.findViewById(R.id.name);
             TextView priceView = (TextView)view.findViewById(R.id.price);
-//            TextView quantityView = (TextView)view.findViewById(R.id.productspinner);
 
 
             ArrayAdapter<String> adapter = new ArrayAdapter<>(Ordercheck.this, R.layout.my_spinner_item);
@@ -496,136 +346,58 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
     private List<ProductDbItem> itemDbList;
 
-    private void setProductDbData(){
 
-//        itemDbList = new ArrayList<ProductDbItem>();
-//
-//        ProductDbItem item = new ProductDbItem();
-//        item.name = "赤鉛筆";
-//        item.price = 500;
-//        item.num = 1;
-//        itemDbList.add(item);
-//
-//        item = new ProductDbItem();
-//        item.name = "青鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemDbList.add(item);
-//
-//        item = new ProductDbItem();
-//        item.name = "黄鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemDbList.add(item);
-//
-//        item = new ProductDbItem();
-//        item.name = "緑鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemDbList.add(item);
-//
-//        item = new ProductDbItem();
-//        item.name = "紫鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemDbList.add(item);
-//
-//        item = new ProductDbItem();
-//        item.name = "茶色鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemDbList.add(item);
-//
-//        item = new ProductDbItem();
-//        item.name = "青鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemDbList.add(item);
-//
-//        item = new ProductDbItem();
-//        item.name = "黄鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemDbList.add(item);
-//
-//        item = new ProductDbItem();
-//        item.name = "緑鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemDbList.add(item);
-//
-//        item = new ProductDbItem();
-//        item.name = "紫鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemDbList.add(item);
-//
-//        item = new ProductDbItem();
-//        item.name = "茶色鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemDbList.add(item);
-//
-//        item = new ProductDbItem();
-//        item.name = "青鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemDbList.add(item);
-//
-//        item = new ProductDbItem();
-//        item.name = "黄鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemDbList.add(item);
-//
-//        item = new ProductDbItem();
-//        item.name = "緑鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemDbList.add(item);
-//
-//        item = new ProductDbItem();
-//        item.name = "紫鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemDbList.add(item);
-//
-//        item = new ProductDbItem();
-//        item.name = "茶色鉛筆";
-//        item.price = 200;
-//        item.num = 1;
-//        itemDbList.add(item);
+    private void selectProductList() {
+        // 1. SQLiteDatabaseオブジェクトを取得
+        SQLiteDatabase db = myHelper.getReadableDatabase();
 
-    }
+        // 2. query()を呼び、検索を行う
+        // メールアドレス、商品名、値段、数量を指定
+        String[] cols = {
+                MyHelper.ColumnsOrderAfter.MAILADDRESS,
+                MyHelper.ColumnsOrderAfter.PRODUCTNAME,
+                MyHelper.ColumnsOrderAfter.PRICE,
+                MyHelper.ColumnsOrderAfter.QUANTITY,
+                MyHelper.ColumnsOrderAfter.ORDERID
+        };
+        // 発注者のメールアドレスとログインアドレスが同じレコードのみを指定
+        String selection = MyHelper.ColumnsOrderAfter.MAILADDRESS + " = ?";
+        SharedPreferences data = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
+        String mailAddr = data.getString("Mailsave", "");
+        String[] selectionArgs = {mailAddr};
+        Cursor cursor = db.query(MyHelper.TABLE_NAME_ORDER, cols, selection, selectionArgs, null, null,
+                MyHelper.ColumnsOrder.ORDERID + " ASC");
 
-    private void initTable(){
-
-        Log.d("ProductList", "initTable");
-
-        SQLiteDatabase db = myHelper.getWritableDatabase();
-
-        // 一旦削除
-        int count = db.delete(MyHelper.TABLE_NAME_ORDER, null, null);
-        Log.d("initTable", "count =" + count);
-
-        setProductDbData();
-
-        for(int i = 0; i< itemDbList.size(); i++){
-            ProductDbItem item = itemDbList.get(i);
-
-            // 列に対応する値をセットする
-            ContentValues values = new ContentValues();
-            values.put(MyHelper.ColumnsOrder.PRODUCTNAME, item.name);
-            values.put(MyHelper.ColumnsOrder.PRICE, item.price);
-            values.put(MyHelper.ColumnsOrder.QUANTITY, item.num);
-
-            // データベースに行を追加する
-            long id = db.insert(MyHelper.TABLE_NAME_ORDER, null, values);
-            if(id == -1){
-                Log.d("Database", "行の追加に失敗したよ");
-            }
+        // 3. 読み込み位置を先頭にする、falseの場合は結果０件
+        if (!cursor.moveToFirst()) {
+            cursor.close();
+            db.close();
+            return;
         }
 
+        // 4. 列のindex(位置)を取得する
+        int productnameIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.PRODUCTNAME);
+        int priceIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.PRICE);
+        int quantityIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.QUANTITY);
+        int orderIdIndex = cursor.getColumnIndex(MyHelper.ColumnsOrder.ORDERID);
+
+        // 5. 行を読み込む
+        orderItemList.removeAll(orderItemList);
+        do {
+            OrderItem item = new OrderItem();
+            item.productName = cursor.getString(productnameIndex);
+            item.price = cursor.getInt(priceIndex);
+            item.quantity = cursor.getInt(quantityIndex);
+            item.orderId = cursor.getInt(orderIdIndex);
+
+            orderItemList.add(item);
+        } while (cursor.moveToNext());
+
+        // 6. Cursorを閉じる
+        cursor.close();
+
+        // 7. データベースを閉じる
+        db.close();
     }
 
 
