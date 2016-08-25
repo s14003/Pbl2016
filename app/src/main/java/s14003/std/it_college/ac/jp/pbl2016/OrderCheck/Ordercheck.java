@@ -24,12 +24,14 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import s14003.std.it_college.ac.jp.pbl2016.MyDatabase;
 import s14003.std.it_college.ac.jp.pbl2016.Product.MyHelper;
 import s14003.std.it_college.ac.jp.pbl2016.R;
 
 public class Ordercheck extends Activity implements AdapterView.OnItemClickListener, View.OnClickListener {
 
-    private MyHelper myHelper;
+    private MyDatabase myHelper;
+    //private MyHelper myHelper;
     private Handler mHandler;
     ProductItem items = new ProductItem();
 
@@ -220,7 +222,7 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ordercheck);
 
-        myHelper = new MyHelper(this);
+        myHelper = new MyDatabase(this);
 
         mHandler = new Handler();
 
@@ -564,7 +566,6 @@ public class Ordercheck extends Activity implements AdapterView.OnItemClickListe
 
         // 一旦削除
         int count = db.delete(Database.TABLE_NAME, null, null);
-        Log.d("initTable", "count =" + count);
 
         setProductDbData();
 
