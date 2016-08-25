@@ -27,8 +27,7 @@
         <activity android:name=".Product.ProductView" />
         >
 
-=======
->>>>>>> c71b240b571dfa6ebf81fb9d289d3212cbe3bf31
+
         <!--<activity android:name=".Ordercheck"></activity>-->
     </application>
 
