@@ -8,7 +8,7 @@ import android.util.Log;
 
 public class Member_database extends SQLiteOpenHelper {
 
-    private final static String DB_NAME = "Member_master.db";
+    private final static String DB_NAME = "pbl.db";
 
     private final static int DB_VERSION = 1;
 

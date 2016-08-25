@@ -3,9 +3,7 @@ package s14003.std.it_college.ac.jp.pbl2016;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
@@ -23,7 +21,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
-//import android.util.Log;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -40,22 +37,22 @@ import java.util.List;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
-//import s14003.std.it_college.ac.jp.pbl2016.Product.MyHelper;
+import s14003.std.it_college.ac.jp.pbl2016.MyDatabase;
+import s14003.std.it_college.ac.jp.pbl2016.Product.MyHelper;
 import s14003.std.it_college.ac.jp.pbl2016.Product.ProductView;
 import s14003.std.it_college.ac.jp.pbl2016.Account.CreateAccount;
-import s14003.std.it_college.ac.jp.pbl2016.Account.Member_database;
 
 /**
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
-    private Member_database menber;
+    //private Member_database menber;
+    private MyDatabase myDb;
+
     /**
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-    /*private Member_database menber;
-    private SQLiteDatabase db;*/
     /**
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
@@ -80,6 +77,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // データベースの生成
+        myDb = new MyDatabase(this);
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -117,15 +117,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mProgressView = findViewById(R.id.login_progress);
     }
 
-
-//     CreateAccountに遷移
-
+    // CreateAccountに遷移
 
     private void createAccount() {
         Intent it = new Intent(LoginActivity.this, CreateAccount.class);
         startActivity(it);
     }
-
 
     private void populateAutoComplete() {
         if (!mayRequestContacts()) {
@@ -170,7 +167,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
-
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -178,21 +174,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private void attemptLogin() {
 
-        /*SharedPreferences mailaddress = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
-        String mail = String.valueOf(mailaddress);*/
-
+        //SharedPreferences mailaddress = getSharedPreferences("Maildata", Context.MODE_PRIVATE);
+        //String mail_dummy = mailaddress.getString("Mailsave", "");
         String mail_dummy = "foo@example.com";
+
+        //String password_dummy = getPassword(mail_dummy, "fooexample");
         String password_dummy = "fooexample";
 
         if (mAuthTask != null) {
             return;
         }
 
-        /*SQLiteDatabase db = menber.getReadableDatabase();
-        String sql = "SELECT" + Member_database.Columns.password +" * FROM " +
-                Member_database.TABLE_NAME +  " WHERE " + Member_database.Columns.MailAdddres;
-        Cursor cursor = db.rawQuery(sql, new String[] { mail });
-*/
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
@@ -200,6 +192,35 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+        Log.d("NOW", email + " " + password);
+
+        // TODO: AccountTableからMailAddressとPassword情報を取得
+        boolean isRegisteredMailAddress = true;   //メールアドレスがアカウントテーブルに登録されているか
+        SQLiteDatabase db = myDb.getReadableDatabase();
+        String[] cols = {
+                MyDatabase.ColumnsAccount.MailAddress,
+                MyDatabase.ColumnsAccount.Password
+        };
+        String selection = MyDatabase.ColumnsAccount.MailAddress + " = ? and "
+                + MyDatabase.ColumnsAccount.Password + " = ?";
+        String[] selectionArgs = {email, password};
+
+        Cursor cursor = db.query(MyDatabase.TABLE_NAME_ACCOUNT, cols, selection, selectionArgs, null, null, null);
+        // 1件もヒットしなかったらアカウント未登録
+        if (!cursor.moveToFirst()) {
+            Log.d("NOW", "Account NOT");
+            isRegisteredMailAddress = false;
+        }
+        else {
+            // 現在の商品テーブルのストックに注文テーブルの数量を加算した値を求める
+            int mailAddrIndex = cursor.getColumnIndex(MyDatabase.ColumnsAccount.MailAddress);
+            mail_dummy = cursor.getString(mailAddrIndex);
+            int passwordIndex = cursor.getColumnIndex(MyDatabase.ColumnsAccount.Password);
+            password_dummy = cursor.getString(passwordIndex);
+        }
+
+        cursor.close();
+        db.close();
 
         boolean cancel = false;
         View focusView = null;
@@ -222,7 +243,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             cancel = true;
         }
 
-        if (email.equals(mail_dummy)) {
+        if (email.equals(mail_dummy) && isRegisteredMailAddress) {
             focusView = mEmailView;
             if (password.equals(password_dummy)) {
                 focusView = mPasswordView;
@@ -330,7 +351,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
-
     }
 
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
@@ -341,7 +361,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mEmailView.setAdapter(adapter);
     }
-
 
     private interface ProfileQuery {
         String[] PROJECTION = {
