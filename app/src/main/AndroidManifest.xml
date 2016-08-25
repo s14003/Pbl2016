@@ -23,7 +23,14 @@
             </intent-filter>
         </activity>
         <activity android:name=".Account.CreateAccount" />
-        <activity android:name=".Account.Account_Profile"></activity>
+        <activity android:name=".Product.ProductView" />
+        <activity android:name=".Product.OrderCancelActivity" />
+        <activity android:name=".OrderCheck.Ordercheck" />
+        <activity android:name=".Account.Account_Profile"/>
+        >
+
+        <!-- <activity android:name=".Ordercheck"></activity> -->
+
     </application>
 
 </manifest>
