@@ -216,6 +216,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             int mailAddrIndex = cursor.getColumnIndex(MyDatabase.ColumnsAccount.MailAddress);
             mail_dummy = cursor.getString(mailAddrIndex);
             int passwordIndex = cursor.getColumnIndex(MyDatabase.ColumnsAccount.Password);
+            Log.d("NOW", String.valueOf(passwordIndex));
             password_dummy = cursor.getString(passwordIndex);
         }
 
