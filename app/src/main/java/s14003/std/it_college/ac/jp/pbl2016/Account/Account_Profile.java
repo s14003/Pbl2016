@@ -1,8 +1,8 @@
 package s14003.std.it_college.ac.jp.pbl2016.Account;
 
+import s14003.std.it_college.ac.jp.pbl2016.MyDatabase;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -19,14 +19,14 @@ import s14003.std.it_college.ac.jp.pbl2016.R;
 
 public class Account_Profile extends AppCompatActivity {
 
-    private Member_database mdb;
+    private MyDatabase mdb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account__profile);
-        mdb = new Member_database(this);
-        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        mdb = new MyDatabase(this);
+//        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
         set_Profdata();
 
         //戻るボタン処理
@@ -152,14 +152,14 @@ public class Account_Profile extends AppCompatActivity {
     private Profdata serchDBdata(Profdata data){
         String target = getEmailshare();
         //queryのための変数達
-        String[] targetcolumns = {Member_database.Columns.LastName,Member_database.Columns.FirstName,
-                Member_database.Columns.Address,Member_database.Columns.password};
-        String serachcond = Member_database.Columns.MailAdddres + " = ?";
+        String[] targetcolumns = {MyDatabase.ColumnsAccount.LastName, MyDatabase.ColumnsAccount.FirstName,
+                MyDatabase.ColumnsAccount.Address, MyDatabase.ColumnsAccount.Password};
+        String serachcond = MyDatabase.ColumnsAccount.MailAddress + " = ?";
         String[] serachargs = {target};
 
         SQLiteDatabase db = mdb.getReadableDatabase();
 
-        Cursor cursor = db.query(Member_database.TABLE_NAME, targetcolumns, serachcond, serachargs,null,null,null);
+        Cursor cursor = db.query(MyDatabase.TABLE_NAME_ACCOUNT, targetcolumns, serachcond, serachargs,null,null,null);
 
         while(cursor.moveToNext()){
             data.lastname = cursor.getString(0);
@@ -177,19 +177,19 @@ public class Account_Profile extends AppCompatActivity {
         SQLiteDatabase db = mdb.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(Member_database.Columns.LastName,Accountdata.lastname);
-        values.put(Member_database.Columns.FirstName,Accountdata.firstname);
-        values.put(Member_database.Columns.Address,Accountdata.prof_address);
-        values.put(Member_database.Columns.password,Accountdata.prof_password);
+        values.put(MyDatabase.ColumnsAccount.LastName,Accountdata.lastname);
+        values.put(MyDatabase.ColumnsAccount.FirstName,Accountdata.firstname);
+        values.put(MyDatabase.ColumnsAccount.Address,Accountdata.prof_address);
+        values.put(MyDatabase.ColumnsAccount.Password,Accountdata.prof_password);
 
         String target = getEmailshare();
-        String serach = Member_database.Columns.MailAdddres + " = ?";
+        String serach = MyDatabase.ColumnsAccount.MailAddress + " = ?";
         String[] args = {target};
 
         long ret;
 
         try{
-            ret = db.update(mdb.TABLE_NAME, values, serach, args);
+            ret = db.update(mdb.TABLE_NAME_ACCOUNT, values, serach, args);
         }finally {
             db.close();
         }
